@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Internship Portal</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right,#1e3c72,#2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-box{
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+        }
+        input, select{
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+        }
+        button{
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background:#0066ff;
+            color:white;
+            border-radius: 6px;
+            font-size:16px;
+            cursor:pointer;
+            margin-top: 15px;
+        }
+        button:hover{
+            background:#004fcc;
+        }
+        a{
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2 style="text-align:center;">Login</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Login As</label>
+        <select name="login_as" required>
+            <option value="student">Student</option>
+            <option value="company">Company</option>
+        </select>
+
+        <input type="email" name="email" placeholder="Enter Email" required>
+        <input type="password" name="password" placeholder="Enter Password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <a href="{% url 'signup_select' %}">Don't have an account? Signup</a>
+    <a href="#">Forgot Password?</a>
+</div>
+
+</body>
+</html>

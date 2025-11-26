@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'index.html' %}
+{% block content%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <title>Add Internship Post</title>
+</head>
+<body class="bg-gray-100 p-6">
+
+
+<div class="p-6">
+    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">
+        Internship Posts
+    </h2>
+
+    <div class="overflow-x-auto shadow-2xl rounded-xl border border-gray-200">
+        <table class="min-w-full bg-white rounded-xl">
+            <thead class="bg-gradient-to-r from-gray-100 to-gray-200 border-b">
+                <tr>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">#</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Title</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Company</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Location</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Stipend</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Duration</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Description</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Posted</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Post Image</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-200">
+                {% for i in data %}
+                <tr class="hover:bg-gray-50 transition duration-150">
+                    <td class="p-4 text-sm text-gray-700">{{ forloop.counter }}</td>
+                    <td class="p-4 text-sm font-semibold text-gray-900">{{ i.internship_title }}</td>
+                    <td class="p-4 text-sm text-gray-700">{{ i.company_name }}</td>
+                    <td class="p-4 text-sm text-green-700 font-semibold">{{ i.location }}</td>
+                    <td class="p-4 text-sm text-gray-700">₹{{ i.stipend }}</td>
+                    <td class="p-4 text-sm text-gray-700">{{ i.duration }}</td>
+                    <td class="p-4 text-sm text-gray-700">{{ i.description|truncatechars:40 }}</td>
+                    <td class="p-4 text-sm text-gray-700">{{ i.posted_date }}</td>
+
+                    <!-- IMAGE PREVIEW -->
+                    <td class="p-4">
+                        {% if i.image %}
+                        <img src="{{ i.image.url }}" class="w-16 h-16 object-cover rounded-md shadow">
+                        {% else %}
+                        <span class="text-xs text-gray-400 italic">No Image</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- ACTION BUTTONS -->
+                    <td class="p-4 flex gap-2">
+                        <a href="{% url 'edit_internship_data' post_id=i.id %}"
+                           class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs font-medium shadow">
+                            Edit
+                        </a>
+
+                        <a href="{% url 'delete_internship_data' del_id=i.id %}"
+                           class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs font-medium shadow"
+                           onclick="return confirm('Are you sure you want to delete this post?');">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
+{% endblock %}

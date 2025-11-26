@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internship Portal Admin</title>
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col">
+
+        <!-- Sidebar Header -->
+        <div class="p-5 text-2xl font-semibold border-b border-gray-700 flex items-center gap-3">
+            <i class="ri-dashboard-fill text-purple-400 text-3xl"></i>
+            Admin Panel
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 space-y-2">
+
+            <a href="{% url 'index_page' %}" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+                <i class="ri-home-3-fill text-purple-300"></i> Dashboard
+            </a>
+
+            <!-- Student Menu -->
+            <div>
+                <button class="w-full flex items-center gap-3 p-2 rounded hover:bg-gray-800"
+                        onclick="document.getElementById('studentMenu').classList.toggle('hidden')">
+                    <i class="ri-user-fill text-green-300"></i> Students ▾
+                </button>
+                <div id="studentMenu" class="ml-6 mt-2 space-y-2 hidden">
+                    <a href="{% url 'add_student' %}" class="block p-2 rounded hover:bg-gray-800">Add Student</a>
+                    <a href="{% url 'display_student_data' %}" class="block p-2 rounded hover:bg-gray-800">View Students</a>
+                </div>
+            </div>
+
+            <!-- Company Menu -->
+            <div>
+                <button class="w-full flex items-center gap-3 p-2 rounded hover:bg-gray-800"
+                        onclick="document.getElementById('companyMenu').classList.toggle('hidden')">
+                    <i class="ri-building-fill text-blue-300"></i> Companies ▾
+                </button>
+                <div id="companyMenu" class="ml-6 mt-2 space-y-2 hidden">
+                    <a href="{% url 'add_company'%}" class="block p-2 rounded hover:bg-gray-800">Add Company</a>
+                    <a href="{% url 'display_company_data'%}" class="block p-2 rounded hover:bg-gray-800">View Companies</a>
+                </div>
+            </div>
+            <div>
+    <button class="w-full flex items-center gap-3 p-2 rounded hover:bg-gray-800"
+            onclick="document.getElementById('internshipMenu').classList.toggle('hidden')">
+        <i class="ri-briefcase-fill text-green-300"></i> Internship Post ▾
+    </button>
+
+    <div id="internshipMenu" class="ml-6 mt-2 space-y-2 hidden">
+        <a href="{% url 'add_internship_post' %}" class="block p-2 rounded hover:bg-gray-800">
+            Add Internship
+        </a>
+
+        <a href="{% url 'display_internship_data' %}" class="block p-2 rounded hover:bg-gray-800">
+            View Internships
+        </a>
+    </div>
+</div>
+
+
+            <a href="#" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+                <i class="ri-file-chart-fill text-yellow-300"></i> Reports
+            </a>
+
+            <a href="#" class="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+                <i class="ri-settings-3-fill text-orange-300"></i> Settings
+            </a>
+        </nav>
+
+<!--        &lt;!&ndash; Logout &ndash;&gt;-->
+<!--        <div class="p-4 border-t border-gray-700">-->
+<!--            <a href="#" class="block text-center bg-red-600 p-2 rounded hover:bg-red-700">-->
+<!--                <i class="ri-logout-box-r-line"></i> Logout-->
+<!--            </a>-->
+<!--        </div>-->
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+
+        <!-- Topbar -->
+        <div class="bg-white p-4 rounded-xl shadow mb-6 flex justify-between items-center">
+            <h2 class="text-xl font-semibold">Internship Portal Dashboard</h2>
+        {% if request.session.username %}
+    <div class="relative">
+        <!-- Button (Welcome + Profile Pic) -->
+        <button onclick="toggleProfileMenu()"
+                class="flex items-center gap-3 bg-gray-100 px-3 py-2 rounded-lg hover:bg-gray-200">
+            <span class="text-gray-700">Welcome {{request.session.username}}</span>
+            <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full border">
+            <i class="ri-arrow-down-s-line text-gray-600"></i>
+        </button>
+
+        <!-- Dropdown with ONLY logout -->
+        <div id="profileMenu"
+             class="hidden absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg">
+
+            <a href="{% url 'admin_logout' %}"
+               class="block px-4 py-2 text-red-600 hover:bg-red-100 font-semibold text-center">
+               Logout
+            </a>
+        </div>
+    </div>
+    {% endif %}
+        </div>
+{% block content  %}
+        <!-- Dashboard Title -->
+        <h1 class="text-3xl font-bold mb-6">Dashboard Overview</h1>
+
+        <!-- Gradient Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+            <!-- Students -->
+            <div class="p-6 rounded-xl shadow text-white"
+                style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Total Students</h3>
+                    <i class="ri-user-3-fill text-4xl opacity-80"></i>
+                </div>
+                <p class="text-4xl font-bold mt-2">{{ student }}</p>
+                <p class="text-sm mt-1">Updated now</p>
+            </div>
+
+            <!-- Companies -->
+            <div class="p-6 rounded-xl shadow text-white"
+                style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Total Companies</h3>
+                    <i class="ri-building-4-fill text-4xl opacity-80"></i>
+                </div>
+                <p class="text-4xl font-bold mt-2">{{ company }}</p>
+                <p class="text-sm mt-1">Updated now</p>
+            </div>
+
+            <!-- Posts -->
+            <div class="p-6 rounded-xl shadow text-white"
+                style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Total Posts</h3>
+                    <i class="ri-article-fill text-4xl opacity-80"></i>
+                </div>
+                <p class="text-4xl font-bold mt-2">{{ internship_post }}</p>
+                <p class="text-sm mt-1">Updated now</p>
+            </div>
+
+
+        </div>
+ <!-- Footer -->
+<footer class="fixed bottom-0 left-0 w-full bg-white shadow-md p-4 text-center text-gray-600">
+    © 2025 Internship Portal Admin. All Rights Reserved.
+</footer>
+        <!-- Recent Activity -->
+<!--        <div class="bg-white p-6 rounded-xl shadow">-->
+<!--            <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>-->
+
+<!--            <ul class="space-y-3">-->
+<!--                <li class="border-b pb-2">New company registered</li>-->
+<!--                <li class="border-b pb-2">Student applied for internship</li>-->
+<!--                <li class="border-b pb-2">Admin updated company details</li>-->
+<!--            </ul>-->
+<!--        </div>-->
+        {% endblock %}
+
+
+
+    </main>
+</div>
+<script>
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+</script>
+</body>
+</html>

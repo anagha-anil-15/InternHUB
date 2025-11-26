@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>InternHub | Signup</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body { background: #F5F8FF; }
+    .option-box {
+        padding: 25px;
+        background: white;
+        border-radius: 15px;
+        cursor:pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition:.3s;
+    }
+    .option-box:hover { transform: scale(1.03); }
+</style>
+</head>
+<body>
+
+<div class="container text-center" style="margin-top:120px;">
+<h2 class="fw-bold text-primary">Create Your InternHub Account</h2>
+<p class="text-secondary">Select your account type</p>
+
+<div class="row justify-content-center mt-5">
+
+<div class="col-md-4">
+    <a href="{% url 'signup_student' %}" style="text-decoration:none;color:black;">
+        <div class="option-box">
+            <h4>👨‍🎓 Student</h4>
+            <p>Find internships and grow skills</p>
+        </div>
+    </a>
+</div>
+
+<div class="col-md-4">
+    <a href="{% url 'signup_company' %}" style="text-decoration:none;color:black;">
+        <div class="option-box">
+            <h4>🏢 Company</h4>
+            <p>Post internships & hire talent</p>
+        </div>
+    </a>
+</div>
+
+</div>
+</div>
+
+</body>
+</html>

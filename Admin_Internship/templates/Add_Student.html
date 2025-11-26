@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% extends 'index.html' %}
+{% block content%}
+<html>
+<head>
+    <title>Student Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 350px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Student Registration</h2>
+
+    <form method="post" action="{% url 'save_student_data' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Student Name:</label>
+        <input type="text" name="student_name" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <label>Contact Number:</label>
+        <input type="tel" name="contact" required>
+
+        <label>Degree:</label>
+        <input type="text" name="degree" required>
+
+        <label>Skills:</label>
+        <input type="text" name="skills" placeholder="e.g. Java, Python">
+
+        <label>Upload Resume:</label>
+        <input type="file" name="resume">
+
+        <label>Profile:</label>
+        <input type="file" name="img">
+
+        <label>Password:</label>
+        <input type="password" name="password" required>
+
+        <label>Confirm Password:</label>
+        <input type="password" name="confirm_password" required>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+</body>
+</html>
+{% endblock %}
