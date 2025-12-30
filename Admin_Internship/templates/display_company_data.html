@@ -86,26 +86,33 @@
   </tr>
 {% for i in data %}
   <tr>
-    <td> {{i.C_Name}}</td>
-    <td> {{i.C_Email}}</td>
-    <td> {{i.C_phone}}</td>
-    <td> {{i.C_Location}}</td>
-    <td> {{i.C_Description}}</td>
+    <td>{{ i.company_name }}</td>
+    <td>{{ i.email }}</td>
+    <td>{{ i.C_phone }}</td>
+    <td>{{ i.C_Location }}</td>
+    <td>{{ i.C_Description }}</td>
+
     <td>
-        <img src="{{ i.logo.url }}">
+        {% if i.logo %}
+        <img src="{{ i.logo.url }}" style="width:50px; height:50px;">
+        {% else %}
+        <span>No Image</span>
+        {% endif %}
     </td>
-    <td> {{i.C_Password}}</td>
-    <td> {{i.C_ConfPassword}}</td>
+
+    <td>{{ i.password }}</td>
+    <td>{{ i.is_verified }}</td>
 
     <td>
         <a href="{% url 'edit_company_data' comp_id=i.id %}">
-            <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>Edit</button>
+            <button style="background:green;color:white;padding:5px;border-radius:5px;">Edit</button>
         </a>
-        <a href="{% url 'delete_company_data' del_id=i.id %}">
-            <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i>Delete</button>
+
+        <a href="{% url 'delete_company_data' del_id=i.id %}" onclick="return confirm('Are you sure?')">
+            <button style="background:red;color:white;padding:5px;border-radius:5px;">Delete</button>
         </a>
     </td>
-  </tr>
+</tr>
     {% endfor %}
 
 </table>

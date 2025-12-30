@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.internship_title }} | InternHUB</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
+
+        <!-- Mobile Menu -->
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
+
+            <!-- Profile -->
+            <div class="relative">
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+                {% else %}
+                <img src="https://via.placeholder.com/40"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer">
+                {% endif %}
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    {% if company.logo %}
+    <img src="{{ company.logo.url }}"
+         class="w-24 h-24 rounded-full mx-auto object-cover border">
+    {% else %}
+    <img src="https://via.placeholder.com/100"
+         class="w-24 h-24 rounded-full mx-auto border">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i> Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item active">
+            <i class="ri-briefcase-fill"></i> Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i> Applications
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 px-4 sm:px-6 lg:ml-72 bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen">
+
+    <div class="max-w-6xl mx-auto">
+
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+
+            {% if post.image %}
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 flex justify-center">
+                <img src="{{ post.image.url }}"
+                     class="max-h-[420px] w-auto object-contain"
+                     alt="Internship Image">
+            </div>
+            {% endif %}
+
+            <div class="p-10">
+
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-2">
+                    {{ post.internship_title }}
+                </h1>
+
+                <p class="text-sm text-gray-500 mb-8">
+                    Posted on {{ post.posted_date|date:"M d, Y" }}
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+                    <div class="info-card">
+                        <span>Company</span>
+                        <p>{{ post.company_name }}</p>
+                    </div>
+
+                    <div class="info-card">
+                        <span>Location</span>
+                        <p>{{ post.location }}</p>
+                    </div>
+
+                    <div class="info-card">
+                        <span>Duration</span>
+                        <p>{{ post.duration }}</p>
+                    </div>
+
+                    <div class="info-card">
+                        <span>Stipend</span>
+                        <p class="text-green-600 font-bold">₹ {{ post.stipend }}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">
+                        Internship Description
+                    </h2>
+
+                    <p class="text-gray-700 leading-loose whitespace-pre-line">
+                        {{ post.description }}
+                    </p>
+                </div>
+
+                <div class="mt-12 flex justify-between items-center border-t pt-6">
+                    <a href="{% url 'company_posts' %}"
+                       class="text-blue-600 font-semibold hover:underline">
+                        ← Back to Internship Posts
+                    </a>
+
+                    <span class="text-xs text-gray-400">
+                        InternHUB Company Panel
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- ================= STYLES ================= -->
+<style>
+    .info-card {
+    background: linear-gradient(to bottom right, #f9fafb, #eef2ff);
+    padding: 18px;
+    border-radius: 16px;
+}
+.info-card span {
+    font-size: 12px;
+    color: #6b7280;
+}
+.info-card p {
+    font-weight: 600;
+    margin-top: 4px;
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+</script>
+
+</body>
+</html>

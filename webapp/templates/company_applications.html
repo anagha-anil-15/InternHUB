@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications | InternHUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
+
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
+
+            <div class="relative">
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+                {% else %}
+                <img src="https://via.placeholder.com/40"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer">
+                {% endif %}
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    {% if company.logo %}
+    <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i> Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item">
+            <i class="ri-briefcase-fill"></i> Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item active">
+            <i class="ri-file-list-3-fill"></i> Applications
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 px-4 sm:px-6 lg:ml-72">
+
+<!-- ================= SUMMARY CARDS ================= -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-xl shadow">
+        <p class="text-sm text-gray-500">Total</p>
+        <p class="text-2xl font-bold">{{ applications|length }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <p class="text-sm text-gray-500">Pending</p>
+        <p class="text-2xl font-bold text-yellow-600">{{ pending_count }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <p class="text-sm text-gray-500">Approved</p>
+        <p class="text-2xl font-bold text-green-600">{{ approved_count }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <p class="text-sm text-gray-500">Rejected</p>
+        <p class="text-2xl font-bold text-red-600">{{ rejected_count }}</p>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow">
+        <p class="text-sm text-gray-500">Shortlisted</p>
+        <p class="text-2xl font-bold text-purple-600">{{ shortlisted_count }}</p>
+    </div>
+</div>
+
+<!-- ================= SEARCH & FILTER ================= -->
+<div class="bg-white p-4 rounded-xl shadow mb-8 flex flex-col md:flex-row gap-4">
+    <input id="searchInput" type="text"
+           placeholder="Search name or email"
+           class="border px-4 py-2 rounded-lg w-full md:w-1/3">
+
+    <select id="statusFilter"
+            class="border px-4 py-2 rounded-lg w-full md:w-1/4">
+        <option value="all">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Shortlisted">Shortlisted</option>
+    </select>
+</div>
+
+<!-- ================= APPLICATION LIST ================= -->
+<div class="space-y-6">
+
+{% for app in applications %}
+<div class="application-card bg-white p-6 rounded-2xl shadow flex flex-col lg:flex-row gap-6"
+     data-status="{{ app.status }}"
+     data-name="{{ app.student.name|lower }}"
+     data-email="{{ app.student.email|lower }}">
+
+    <img src="{{ app.student.img.url }}"
+         class="w-20 h-20 rounded-full object-cover ring-4 ring-blue-100 mx-auto lg:mx-0">
+
+    <div class="flex-1">
+        <h3 class="text-xl font-semibold">{{ app.student.name }}</h3>
+        <p class="text-sm text-gray-500">{{ app.student.email }}</p>
+        <p class="text-sm text-gray-500 mt-1">
+            {{ app.student.Degree }} • {{ app.student.skills }}
+        </p>
+        <p class="text-sm mt-2">
+            Applied for <strong>{{ app.internship.internship_title }}</strong>
+        </p>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="flex flex-col gap-2 w-full lg:w-44">
+
+        <span class="text-xs px-3 py-1 rounded-full text-center
+        {% if app.status == 'Pending' %} bg-yellow-100 text-yellow-700
+        {% elif app.status == 'Approved' %} bg-green-100 text-green-700
+        {% elif app.status == 'Rejected' %} bg-red-100 text-red-700
+        {% elif app.status == 'Shortlisted' %} bg-purple-100 text-purple-700
+        {% endif %}">
+            {{ app.status }}
+        </span>
+
+        <a href="{{ app.student.resume.url }}" target="_blank"
+           class="bg-blue-600 text-white text-sm py-2 rounded-lg text-center">
+            View Resume
+        </a>
+
+        <a href="{% url 'update_application_status' app.id %}?status=Shortlisted"
+           class="bg-purple-600 text-white text-sm py-2 rounded-lg text-center">
+            ⭐ Shortlist
+        </a>
+
+        <a href="{% url 'update_application_status' app.id %}?status=Approved"
+           class="bg-green-600 text-white text-sm py-2 rounded-lg text-center">
+            ✅ Approve
+        </a>
+
+        <a href="{% url 'update_application_status' app.id %}?status=Rejected"
+           class="bg-red-600 text-white text-sm py-2 rounded-lg text-center">
+            ❌ Reject
+        </a>
+    </div>
+
+</div>
+{% endfor %}
+</div>
+
+</main>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const cards = document.querySelectorAll(".application-card");
+
+function filterApps() {
+    const s = searchInput.value.toLowerCase();
+    const f = statusFilter.value;
+
+    cards.forEach(c => {
+        const matchText =
+            c.dataset.name.includes(s) || c.dataset.email.includes(s);
+        const matchStatus =
+            f === "all" || c.dataset.status === f;
+
+        c.style.display = matchText && matchStatus ? "flex" : "none";
+    });
+}
+searchInput.addEventListener("input", filterApps);
+statusFilter.addEventListener("change", filterApps);
+</script>
+
+<style>
+.menu-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+</style>
+
+</body>
+</html>

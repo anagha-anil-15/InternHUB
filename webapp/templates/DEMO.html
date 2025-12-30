@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating & Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 350px;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stars i {
+            font-size: 30px;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .stars i.active {
+            color: gold;
+        }
+
+        textarea {
+            width: 90%;
+            height: 80px;
+            margin-top: 15px;
+            padding: 10px;
+            resize: none;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ffe9;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Rate & Review</h2>
+
+    <div class="stars">
+        <i class="star" data-value="1">&#9733;</i>
+        <i class="star" data-value="2">&#9733;</i>
+        <i class="star" data-value="3">&#9733;</i>
+        <i class="star" data-value="4">&#9733;</i>
+        <i class="star" data-value="5">&#9733;</i>
+    </div>
+
+    <textarea id="review" placeholder="Write your review..."></textarea>
+    <button onclick="submitReview()">Submit</button>
+
+    <div class="output" id="result"></div>
+</div>
+
+<script>
+    let stars = document.querySelectorAll(".star");
+    let rating = 0;
+
+    stars.forEach((star) => {
+        star.addEventListener("click", () => {
+            rating = star.getAttribute("data-value");
+            resetStars();
+            highlightStars(rating);
+        });
+    });
+
+    function resetStars() {
+        stars.forEach((star) => star.classList.remove("active"));
+    }
+
+    function highlightStars(count) {
+        for (let i = 0; i < count; i++) {
+            stars[i].classList.add("active");
+        }
+    }
+
+    function submitReview() {
+        let reviewText = document.getElementById("review").value;
+        if (rating === 0 || reviewText.trim() === "") {
+            alert("Please select a rating and write a review.");
+            return;
+        }
+
+        document.getElementById("result").innerHTML =
+            `<strong>Rating:</strong> ${rating} ⭐<br><strong>Review:</strong> ${reviewText}`;
+        document.getElementById("result").style.display = "block";
+    }
+</script>
+
+</body>
+</html>
+
+
+      <div class="max-w-6xl mx-auto mt-20 bg-white rounded-xl shadow p-8">
+
+    <!-- TOP SECTION -->
+    <div class="flex items-center gap-6 mb-6">
+        {% if internship.logo %}
+            <img src="{{ internship.logo.url }}"
+                 class="w-24 h-24 rounded-full object-cover border-4 border-blue-600">
+        {% endif %}
+
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                {{ internship.internship_title }}
+            </h1>
+            <p class="text-gray-600 text-lg">
+                {{ internship.company_name }} • {{ internship.location }}
+            </p>
+        </div>
+    </div>
+
+    <!-- TAGS -->
+    <div class="flex flex-wrap gap-3 mb-6">
+        <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
+            {{ internship.internship_type }}
+        </span>
+        <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">
+            {{ internship.duration }}
+        </span>
+        <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm">
+            ₹ {{ internship.stipend }}
+        </span>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="mb-6">
+        <h2 class="text-xl font-bold mb-2">Internship Description</h2>
+        <p class="text-gray-700 leading-relaxed">
+            {{ internship.description }}
+        </p>
+    </div>
+
+    <!-- RESPONSIBILITIES -->
+    {% if internship.responsibilities %}
+    <div class="mb-6">
+        <h2 class="text-xl font-bold mb-2">Responsibilities</h2>
+        <p class="text-gray-700 leading-relaxed">
+            {{ internship.responsibilities }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- SKILLS -->
+    {% if internship.skills %}
+    <div class="mb-6">
+        <h2 class="text-xl font-bold mb-2">Required Skills</h2>
+        <p class="text-gray-700">
+            {{ internship.skills }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- POST IMAGE -->
+    {% if internship.image %}
+        <img src="{{ internship.image.url }}"
+             class="w-full max-h-[400px] object-contain rounded-lg shadow mb-6">
+    {% endif %}
+
+    <!-- ACTION BUTTONS -->
+    <div class="flex gap-4 mt-8">
+
+        {% if applied %}
+            <button class="bg-gray-400 text-white px-6 py-2 rounded cursor-not-allowed">
+                <i class="ri-check-line"></i> Applied
+            </button>
+        {% else %}
+            <a href="{% url 'confirm_apply' internship.id %}"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
+                <i class="ri-send-plane-fill"></i> Apply Now
+            </a>
+        {% endif %}
+
+        {% if saved %}
+            <button class="border px-6 py-2 rounded bg-yellow-300 cursor-not-allowed">
+                <i class="ri-bookmark-fill"></i> Saved
+            </button>
+        {% else %}
+            <a href="{% url 'save_internship' internship.id %}"
+               class="border px-6 py-2 rounded hover:bg-gray-100">
+                <i class="ri-bookmark-line"></i> Save Internship
+            </a>
+        {% endif %}
+
+    </div>
+
+    <!-- BACK -->
+    <div class="mt-6">
+        <a href="{% url 'saved_internships' %}"
+           class="text-blue-600 hover:underline">
+            ← Back to Saved Internships
+        </a>
+    </div>
+
+</div>

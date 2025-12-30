@@ -9,145 +9,235 @@
 
 <body class="bg-gray-100">
 
-    <!-- TOP NAVBAR -->
-    <nav class="bg-white shadow-md fixed w-full z-50 top-0 left-0">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
 
-            <ul class="flex items-center gap-8">
-                <li><a href="#" class="hover:text-blue-600">Dashboard</a></li>
-                <li><a href="#" class="hover:text-blue-600">My Posts</a></li>
-                <li><a href="#" class="hover:text-blue-600">Applications</a></li>
-            </ul>
+        <!-- Mobile Menu Button -->
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
 
-            <!-- Notification + Profile -->
-            <div class="flex items-center gap-6">
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
 
-                <!-- Notifications -->
-                <button class="relative">
-                    <i class="ri-notification-3-fill text-2xl"></i>
-                    <span class="absolute -top-1 -right-1 text-xs bg-red-500 text-white px-1 rounded-full">3</span>
-                </button>
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}" class="relative">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
 
-                <!-- Profile Dropdown -->
-                <div class="relative group">
-                    <img src="https://i.pravatar.cc/50?img=24" class="w-10 h-10 rounded-full border cursor-pointer">
-                    <div class="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg hidden group-hover:block">
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Company Profile</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-red-600">Logout</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+            <!-- Profile Dropdown -->
+<div class="relative">
+    {% if company.logo %}
+    <img src="{{ company.logo.url }}"
+         onclick="toggleProfileMenu()"
+         class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+    {% else %}
+    <img src="https://via.placeholder.com/40"
+         onclick="toggleProfileMenu()"
+         class="w-10 h-10 rounded-full border cursor-pointer">
+    {% endif %}
+
+    <!-- Dropdown -->
+    <div id="profileMenu"
+         class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
 
 
-    <!-- MAIN CONTENT -->
-    <div class="max-w-7xl mx-auto pt-28 px-6 pb-16">
+        <form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button
+        class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+        Logout
+    </button>
+</form>
 
-        <!-- Dashboard Heading -->
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">Company Dashboard</h2>
-
-        <!-- COMPANY PROFILE SIDEBAR + MAIN CONTENT -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-
-            <!-- SIDEBAR PROFILE -->
-            <div class="col-span-1 bg-white p-6 rounded-xl shadow-lg">
-                <div class="text-center">
-                    <img src="https://i.pravatar.cc/130?img=26" class="w-28 h-28 rounded-full mx-auto">
-                    <h3 class="text-xl font-bold mt-4">TechCorp Solutions</h3>
-                    <p class="text-gray-600">Software Company</p>
-                </div>
-
-                <div class="mt-6 space-y-3">
-                    <a href="#" class="block p-3 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="ri-building-fill mr-2"></i> Company Details
-                    </a>
-
-                    <a href="#" class="block p-3 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="ri-briefcase-fill mr-2"></i> Internship Posts
-                    </a>
-
-                    <a href="#" class="block p-3 rounded-lg bg-gray-100 hover:bg-blue-50 hover:text-blue-600">
-                        <i class="ri-file-list-3-fill mr-2"></i> Applications
-                    </a>
-                </div>
-            </div>
-
-            <!-- MAIN DASHBOARD AREA -->
-            <div class="col-span-3">
-
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-xl transition">
-                        <h3 class="text-lg font-semibold">Total Posts</h3>
-                        <p class="text-4xl font-bold text-blue-600 mt-3">14</p>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-xl transition">
-                        <h3 class="text-lg font-semibold">Total Applications</h3>
-                        <p class="text-4xl font-bold text-green-600 mt-3">87</p>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-xl transition">
-                        <h3 class="text-lg font-semibold">Shortlisted</h3>
-                        <p class="text-4xl font-bold text-purple-600 mt-3">12</p>
-                    </div>
-
-                </div>
-
-                <!-- Internship Posts Section -->
-                <div class="bg-white p-8 rounded-xl shadow">
-
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-semibold">Your Internship Posts</h3>
-                        <a href="#"
-                           class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-                            + Create Post
-                        </a>
-                    </div>
-
-                    <!-- Internship Post List -->
-                    <div class="space-y-6">
-
-                        <!-- Post 1 -->
-                        <div class="flex gap-6 bg-gray-50 p-5 rounded-lg hover:bg-gray-100">
-                            <img src="https://via.placeholder.com/90" class="w-24 h-24 rounded-lg">
-                            <div class="flex-1">
-                                <h4 class="text-xl font-semibold">Frontend Developer Intern</h4>
-                                <p class="text-gray-600 mt-1">Category: IT / Software</p>
-                                <p class="text-gray-600 text-sm mt-1">Posted: Jan 25, 2025</p>
-                            </div>
-                            <div class="flex gap-3 items-center">
-                                <button class="px-4 py-2 bg-green-500 text-white rounded">Edit</button>
-                                <button class="px-4 py-2 bg-red-500 text-white rounded">Delete</button>
-                            </div>
-                        </div>
-
-                        <!-- Post 2 -->
-                        <div class="flex gap-6 bg-gray-50 p-5 rounded-lg hover:bg-gray-100">
-                            <img src="https://via.placeholder.com/90" class="w-24 h-24 rounded-lg">
-                            <div class="flex-1">
-                                <h4 class="text-xl font-semibold">Data Analyst Intern</h4>
-                                <p class="text-gray-600 mt-1">Category: Analytics</p>
-                                <p class="text-gray-600 text-sm mt-1">Posted: Jan 22, 2025</p>
-                            </div>
-                            <div class="flex gap-3 items-center">
-                                <button class="px-4 py-2 bg-green-500 text-white rounded">Edit</button>
-                                <button class="px-4 py-2 bg-red-500 text-white rounded">Delete</button>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
+    </div>
+</div>
 
         </div>
     </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6 overflow-y-auto
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    <!-- Collapse Button (Desktop) -->
+<!--    <button onclick="collapseSidebar()" class="hidden lg:block absolute -right-4 top-6 bg-blue-600 text-white rounded-full p-1">-->
+<!--        <i id="collapseIcon" class="ri-arrow-left-s-line"></i>-->
+<!--    </button>-->
+
+    {% if company.logo %}
+    <a href="{% url 'company_page' %}">
+        <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border sidebar-text">
+    </a>
+    {% else %}
+    <img src="https://via.placeholder.com/100" class="w-24 h-24 rounded-full mx-auto border sidebar-text">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4 sidebar-text">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i>
+            <span class="sidebar-text">Company Details</span>
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item">
+            <i class="ri-briefcase-fill"></i>
+            <span class="sidebar-text">Internship Posts</span>
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i>
+            <span class="sidebar-text">Applications</span>
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main id="mainContent" class="pt-28 pb-16 px-6 lg:ml-72 transition-all duration-300">
+
+    <h2 class="text-3xl font-bold mb-8">Company Dashboard</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h3>Total Posts</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ total_posts }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h3>Total Applications</h3>
+            <p class="text-3xl font-bold text-green-600">{{ total_applications }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h3>Shortlisted</h3>
+            <p class="text-3xl font-bold text-purple-600">{{ shortlisted_count }}</p>
+        </div>
+    </div>
+
+    <!-- ================= POSTS SECTION ================= -->
+<div class="bg-white p-8 rounded-xl shadow">
+
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-semibold">Your Internship Posts</h3>
+        <a href="{% url 'create_internship_post' %}"
+           class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+            + Create Post
+        </a>
+    </div>
+
+    {% if posts %}
+        <div class="space-y-6">
+            {% for post in posts %}
+            <div class="flex gap-6 bg-gray-50 p-5 rounded-lg hover:bg-gray-100">
+
+                {% if post.image %}
+                <img src="{{ post.image.url }}" class="w-24 h-24 rounded-lg object-cover">
+                {% else %}
+                <img src="{{ post.logo.url }}" class="w-24 h-24 rounded-lg object-cover">
+                {% endif %}
+
+                <div class="flex-1">
+                    <h4 class="text-xl font-semibold">
+                        {{ post.internship_title }}
+                    </h4>
+                    <p class="text-gray-600 mt-1">
+                        Location: {{ post.location }}
+                    </p>
+                    <p class="text-gray-600 text-sm mt-1">
+                        Stipend: {{ post.stipend }} | Duration: {{ post.duration }}
+                    </p>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Posted: {{ post.posted_date|date:"M d, Y" }}
+                    </p>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center">
+            You haven’t created any internship posts yet.
+        </p>
+    {% endif %}
+</div>
+
+</main>
+
+<!-- ================= STYLES ================= -->
+<style>
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    transition: 0.2s;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+    color: #2563eb;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+.collapsed {
+    width: 5rem !important;
+}
+.collapsed .sidebar-text {
+    display: none;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const sidebar = document.getElementById("sidebar");
+const mainContent = document.getElementById("mainContent");
+const collapseIcon = document.getElementById("collapseIcon");
+
+// Mobile toggle
+function toggleSidebar() {
+    sidebar.classList.toggle("-translate-x-full");
+}
+
+// Collapse sidebar (desktop)
+function collapseSidebar() {
+    sidebar.classList.toggle("collapsed");
+    mainContent.classList.toggle("lg:ml-72");
+    mainContent.classList.toggle("lg:ml-20");
+
+    collapseIcon.classList.toggle("ri-arrow-left-s-line");
+    collapseIcon.classList.toggle("ri-arrow-right-s-line");
+}
+
+// Active menu highlight
+const links = document.querySelectorAll(".menu-item");
+links.forEach(link => {
+    if (link.href === window.location.href) {
+        link.classList.add("active");
+    }
+});
+    function toggleProfileMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.classList.toggle("hidden");
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function (event) {
+    const profileMenu = document.getElementById("profileMenu");
+    const profileImage = event.target.closest("img");
+
+    if (!event.target.closest("#profileMenu") && !profileImage) {
+        profileMenu.classList.add("hidden");
+    }
+});
+</script>
 
 </body>
 </html>

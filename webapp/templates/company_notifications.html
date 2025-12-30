@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-5xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
+
+    <h2 class="text-2xl font-bold mb-6">New Applications</h2>
+
+    {% if applications %}
+        {% for app in applications %}
+            <div class="p-4 border rounded-lg mb-3">
+                <p class="font-semibold">
+                    {{ app.student.name }}
+                    <span class="text-gray-500">applied for</span>
+                    {{ app.internship.internship_title }}
+                </p>
+                <p class="text-sm text-gray-500">
+                    {{ app.date_applied|date:"M d, Y h:i A" }}
+                </p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-gray-500">No notifications.</p>
+    {% endif %}
+
+    <a href="{% url 'company_page' %}" class="text-blue-600 hover:underline">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

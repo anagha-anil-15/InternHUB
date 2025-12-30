@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications - InternHUB</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR (SAME AS DASHBOARD) ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+  <div class="px-6 py-4 flex justify-between items-center">
+
+    <!-- Mobile Menu -->
+    <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+      <i class="ri-menu-line"></i>
+    </button>
+
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
+
+    <!-- Right -->
+    <div class="flex items-center gap-6">
+
+      <span class="hidden sm:block text-gray-700 text-sm">
+        Welcome,
+        <span class="font-semibold text-blue-600">{{ student.name }}</span>
+      </span>
+
+      <!-- Profile -->
+      <div class="relative">
+        {% if student.img %}
+        <img src="{{ student.img.url }}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+        {% else %}
+        <img src="{% static 'images/default_user.png' %}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer">
+        {% endif %}
+
+        <div id="profileMenu"
+             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+          <a href="{% url 'student_settings' %}"
+             class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+          <a href="{% url 'login_select' %}"
+             class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- ================= MAIN LAYOUT ================= -->
+<div class="flex pt-24 px-6">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside id="sidebar"
+         class="fixed top-0 left-0 z-40 w-72 h-full
+                bg-white shadow-xl p-6
+                transform -translate-x-full transition-transform
+                lg:translate-x-0 lg:top-24 lg:left-6
+                lg:h-[calc(100vh-6rem)]
+                rounded-none lg:rounded-xl
+                overflow-y-auto">
+
+    <!-- Close (mobile) -->
+    <button onclick="toggleSidebar()"
+            class="lg:hidden absolute top-4 right-4 text-2xl">
+      <i class="ri-close-line"></i>
+    </button>
+
+    <div class="flex flex-col items-center text-center mt-8 lg:mt-0">
+      {% if student.img %}
+      <img src="{{ student.img.url }}"
+           class="w-28 h-28 rounded-full object-cover border-4 border-blue-600 shadow">
+      {% else %}
+      <img src="{% static 'images/default_user.png' %}"
+           class="w-28 h-28 rounded-full border-4 border-blue-600 shadow">
+      {% endif %}
+
+      <h2 class="text-xl font-bold mt-3">{{ student.name }}</h2>
+      <p class="text-gray-500 text-sm">Student</p>
+    </div>
+
+    <hr class="my-5">
+
+    <nav class="space-y-3 text-gray-700">
+
+      <a href="{% url 'student_page' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="student_page">
+        <i class="ri-home-4-line text-xl"></i> Dashboard
+      </a>
+
+      <a href="{% url 'my_applications' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded"
+         data-path="my_applications">
+        <i class="ri-file-list-3-line text-xl"></i> My Applications
+      </a>
+
+      <a href="{% url 'saved_internships' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="saved_internships">
+        <i class="ri-heart-fill text-xl text-red-500"></i> Saved Internships
+      </a>
+
+      <a href="{% url 'student_settings' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="student_settings">
+        <i class="ri-settings-3-line text-xl"></i> Settings
+      </a>
+
+    </nav>
+  </aside>
+
+  <!-- ================= CONTENT ================= -->
+  <main class="flex-1 ml-0 lg:ml-[18.5rem]">
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <span class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+          <i class="ri-briefcase-line"></i>
+        </span>
+        My Applications
+      </h1>
+
+      <!-- Search -->
+      <div class="relative w-full sm:w-72">
+        <i class="ri-search-line absolute left-3 top-3 text-gray-400"></i>
+        <input type="text"
+               id="searchInput"
+               placeholder="Search internship..."
+               class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+      </div>
+    </div>
+
+    <!-- ===== STATUS SUMMARY ===== -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+
+      <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-sm text-gray-500">Total</p>
+        <h2 class="text-2xl font-bold text-blue-600">{{ applications|length }}</h2>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-sm text-gray-500">Applied</p>
+        <h2 class="text-2xl font-bold text-blue-500">
+          {{ applied_count }}
+        </h2>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-sm text-gray-500">Shortlisted</p>
+        <h2 class="text-2xl font-bold text-green-600">
+          {{ shortlisted_count }}
+        </h2>
+      </div>
+
+      <div class="bg-white rounded-xl shadow p-4 text-center">
+        <p class="text-sm text-gray-500">Rejected</p>
+        <h2 class="text-2xl font-bold text-red-600">
+          {{ rejected_count }}
+        </h2>
+      </div>
+
+    </div>
+
+    <!-- ===== APPLICATION LIST ===== -->
+    {% if applications %}
+    <div class="space-y-5">
+
+      {% for app in applications %}
+      <div class="bg-white rounded-2xl shadow hover:shadow-lg transition p-6">
+
+        <!-- TOP -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+          <div>
+            <h3 class="text-lg font-bold text-gray-800">
+              {{ app.internship.internship_title }}
+            </h3>
+            <p class="text-sm text-gray-500">
+              {{ app.internship.company_name }} • {{ app.internship.location }}
+            </p>
+          </div>
+
+          <!-- STATUS BADGE -->
+          <span class="px-4 py-1 rounded-full text-sm font-semibold
+            {% if app.status == 'Shortlisted' %}bg-green-100 text-green-700
+            {% elif app.status == 'Rejected' %}bg-red-100 text-red-700
+            {% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ app.status }}
+          </span>
+        </div>
+
+        <!-- NOTE -->
+        {% if app.company_note %}
+        <div class="mt-4 bg-gray-50 border-l-4 border-blue-500 p-4 rounded">
+          <p class="text-sm text-gray-700">
+            <b>Company Note:</b> {{ app.company_note }}
+          </p>
+        </div>
+        {% endif %}
+
+        <!-- FOOTER -->
+        <div class="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+
+          <p class="text-xs text-gray-400">
+            Applied on {{ app.date_applied|date:"M d, Y" }}
+          </p>
+
+          <a href="{% url 'internship_detail' app.internship.id %}"
+             class="text-blue-600 text-sm font-semibold hover:underline">
+            View Internship →
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE -->
+    <div class="bg-white rounded-xl shadow p-12 text-center">
+      <i class="ri-folder-open-line text-5xl text-gray-300"></i>
+      <p class="text-gray-600 text-lg mt-4">
+        No applications yet
+      </p>
+      <p class="text-sm text-gray-400 mt-1">
+        Start applying to internships to track them here
+      </p>
+    </div>
+    {% endif %}
+
+  </div>
+</main>
+
+
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+function toggleProfileMenu() {
+  document.getElementById("profileMenu").classList.toggle("hidden");
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar")
+    .classList.toggle("-translate-x-full");
+}
+
+/* Active menu auto-detect */
+const currentPath = "{{ request.resolver_match.url_name }}";
+document.querySelectorAll(".nav-link").forEach(link => {
+  if (link.dataset.path === currentPath) {
+    link.classList.add("bg-blue-100", "text-blue-700", "font-semibold");
+  }
+});
+
+const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const cards = document.querySelectorAll(".application-card");
+
+function filterApplications() {
+  const searchText = searchInput.value.toLowerCase();
+  const status = statusFilter.value;
+
+  cards.forEach(card => {
+    const matchesText = card.dataset.text.toLowerCase().includes(searchText);
+    const matchesStatus = status === "all" || card.dataset.status === status;
+
+    card.style.display = matchesText && matchesStatus ? "block" : "none";
+  });
+}
+
+searchInput.addEventListener("input", filterApplications);
+statusFilter.addEventListener("change", filterApplications);
+
+
+</script>
+
+</body>
+</html>

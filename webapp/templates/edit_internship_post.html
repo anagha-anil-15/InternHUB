@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Internship | InternHUB</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
+
+        <!-- Mobile Menu -->
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
+
+            <!-- Profile -->
+            <div class="relative">
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+                {% else %}
+                <img src="https://via.placeholder.com/40"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer">
+                {% endif %}
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    {% if company.logo %}
+    <img src="{{ company.logo.url }}"
+         class="w-24 h-24 rounded-full mx-auto object-cover border">
+    {% else %}
+    <img src="https://via.placeholder.com/100"
+         class="w-24 h-24 rounded-full mx-auto border">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i> Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item active">
+            <i class="ri-briefcase-fill"></i> Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i> Applications
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 px-4 sm:px-6 lg:ml-72">
+
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Edit Internship</h2>
+
+            <a href="{% url 'company_posts' %}"
+               class="text-blue-600 hover:underline">
+                ← Back
+            </a>
+        </div>
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium">Internship Title</label>
+                <input type="text" name="internship_title"
+                       value="{{ post.internship_title }}"
+                       class="w-full border rounded-lg px-4 py-2 mt-1">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium">Location</label>
+                    <input type="text" name="location"
+                           value="{{ post.location }}"
+                           class="w-full border rounded-lg px-4 py-2 mt-1">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Duration</label>
+                    <input type="text" name="duration"
+                           value="{{ post.duration }}"
+                           class="w-full border rounded-lg px-4 py-2 mt-1">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Stipend</label>
+                <input type="number" name="stipend"
+                       value="{{ post.stipend }}"
+                       class="w-full border rounded-lg px-4 py-2 mt-1">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Description</label>
+                <textarea name="description"
+                          rows="4"
+                          class="w-full border rounded-lg px-4 py-2 mt-1">{{ post.description }}</textarea>
+            </div>
+
+            <!-- ACTIVE / CLOSED -->
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="is_active"
+                       {% if post.is_active %}checked{% endif %}
+                       class="w-5 h-5">
+                <label class="text-sm">Internship is Active</label>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="submit"
+                        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    Save Changes
+                </button>
+
+                <a href="{% url 'company_posts' %}"
+                   class="bg-gray-200 px-6 py-2 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+<!-- ================= STYLES ================= -->
+<style>
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+</script>
+
+</body>
+</html>

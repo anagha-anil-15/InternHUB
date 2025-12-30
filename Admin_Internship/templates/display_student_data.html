@@ -87,27 +87,45 @@
   </tr>
 {% for i in data %}
   <tr>
-    <td>{{i.name}}</td>
-    <td>{{i.Email}}</td>
-    <td>{{i.number}}</td>
-    <td>{{i.Degree}}</td>
-    <td>{{i.skills}}</td>
-    <td>{{i.resume}}</td>
+    <td>{{ i.name }}</td>
+    <td>{{ i.email }}</td>
+    <td>{{ i.number }}</td>
+    <td>{{ i.Degree }}</td>
+    <td>{{ i.skills }}</td>
+
+    <!-- Resume Link -->
     <td>
-      <img src="{{ i.img.url }}">
+        {% if i.resume %}
+            <a href="{{ i.resume.url }}" download>Download Resume</a>
+
+
+        {% else %}
+            <span class="text-gray-500">No File</span>
+        {% endif %}
     </td>
-    <td>{{i.password}}</td>
-    <td>{{i.c_password}}</td>
+
+    <!-- Profile Image -->
+    <td>
+        {% if i.img %}
+            <img src="{{ i.img.url }}" width="50" height="50" style="border-radius: 5px;">
+        {% else %}
+            <span class="text-gray-500">No Image</span>
+        {% endif %}
+    </td>
+
+    <td>{{ i.password }}</td>
+    <td>{{ i.is_verified }}</td>
 
     <td>
-      <a href="{% url 'edit_student_data' stud_id=i.id %}">
-      <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>Edit</button>
-      </a>
-      <a href="{% url 'delete_student_data' del_id=i.id %}">
-      <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i>Delete</button>
-      </a>
+        <a href="{% url 'edit_student_data' stud_id=i.id %}">
+            <button class="action-btn edit-btn"><i class="fa-solid fa-pen"></i>Edit</button>
+        </a>
+        <a href="{% url 'delete_student_data' del_id=i.id %}">
+            <button class="action-btn delete-btn"><i class="fa-solid fa-trash"></i>Delete</button>
+        </a>
     </td>
-  </tr>
+</tr>
+
 {% endfor %}
 </table>
 

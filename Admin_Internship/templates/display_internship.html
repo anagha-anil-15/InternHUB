@@ -31,6 +31,7 @@
                     <th class="p-4 text-left text-sm font-bold text-gray-700">Description</th>
                     <th class="p-4 text-left text-sm font-bold text-gray-700">Posted</th>
                     <th class="p-4 text-left text-sm font-bold text-gray-700">Post Image</th>
+                    <th class="p-4 text-left text-sm font-bold text-gray-700">Company Logo</th>
                     <th class="p-4 text-left text-sm font-bold text-gray-700">Actions</th>
                 </tr>
             </thead>
@@ -51,6 +52,13 @@
                     <td class="p-4">
                         {% if i.image %}
                         <img src="{{ i.image.url }}" class="w-16 h-16 object-cover rounded-md shadow">
+                        {% else %}
+                        <span class="text-xs text-gray-400 italic">No Image</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4">
+                        {% if i.logo %}
+                        <img src="{{ i.logo.url }}" class="w-16 h-16 object-cover rounded-md shadow">
                         {% else %}
                         <span class="text-xs text-gray-400 italic">No Image</span>
                         {% endif %}

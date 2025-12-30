@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Internship Posts | InternHUB</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
+
+        <!-- Mobile Menu -->
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
+
+            <!-- Profile -->
+            <div class="relative">
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+                {% else %}
+                <img src="https://via.placeholder.com/40"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer">
+                {% endif %}
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    {% if company.logo %}
+    <img src="{{ company.logo.url }}"
+         class="w-24 h-24 rounded-full mx-auto object-cover border">
+    {% else %}
+    <img src="https://via.placeholder.com/100"
+         class="w-24 h-24 rounded-full mx-auto border">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i> Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item active">
+            <i class="ri-briefcase-fill"></i> Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i> Applications
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 px-4 sm:px-6 lg:ml-72">
+
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-800">My Internship Posts</h2>
+            <p class="text-gray-500 mt-1">Manage, track & control your internship listings</p>
+        </div>
+
+        <a href="{% url 'create_internship_post' %}"
+           class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700">
+            <i class="ri-add-line"></i> Create Internship
+        </a>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow p-4 mb-8 flex flex-col md:flex-row gap-4">
+        <input id="searchInput"
+               type="text"
+               placeholder="Search internship title..."
+               class="w-full md:w-1/2 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+
+        <select id="statusFilter"
+                class="w-full md:w-1/4 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+        </select>
+    </div>
+
+    {% if posts %}
+    <!-- Cards Grid -->
+    <div id="postsGrid"
+         class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {% for post in posts %}
+        <div class="post-card bg-white rounded-2xl shadow hover:shadow-xl transition"
+             data-title="{{ post.internship_title|lower }}"
+             data-status="{% if post.is_active %}active{% else %}closed{% endif %}">
+
+            <!-- Header -->
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-start gap-2">
+                    <h3 class="text-xl font-semibold text-gray-800 line-clamp-2">
+                        {{ post.internship_title }}
+                    </h3>
+
+                    <span class="text-xs px-3 py-1 rounded-full
+                        {% if post.is_active %}
+                        bg-green-100 text-green-700
+                        {% else %}
+                        bg-red-100 text-red-700
+                        {% endif %}">
+                        {% if post.is_active %}Active{% else %}Closed{% endif %}
+                    </span>
+                </div>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Posted on {{ post.posted_date|date:"M d, Y" }}
+                </p>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-3 text-sm text-gray-600">
+                <div class="flex items-center gap-2">
+                    <i class="ri-map-pin-2-fill text-blue-500"></i>
+                    {{ post.location }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <i class="ri-time-fill text-green-500"></i>
+                    {{ post.duration }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <i class="ri-money-rupee-circle-fill text-purple-500"></i>
+                    ₹ {{ post.stipend }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <i class="ri-file-list-3-fill text-orange-500"></i>
+                    <strong>{{ post.applications_count }}</strong> Applications
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 bg-gray-50 flex flex-wrap gap-2 justify-between items-center">
+
+                <a href="{% url 'company_post_detail' post.id %}"
+                   class="text-blue-600 font-medium hover:underline">
+                    View →
+                </a>
+
+                <div class="flex gap-2">
+                    <a href="{% url 'edit_internship_post' post.id %}"
+                       class="px-3 py-1.5 text-sm bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200">
+                        ✏️ Edit
+                    </a>
+
+                    <a href="{% url 'delete_internship_post' post.id %}"
+                       onclick="return confirm('Are you sure you want to delete this post?')"
+                       class="px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200">
+                        🗑 Delete
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-10 text-center">
+        <i class="ri-briefcase-line text-5xl text-gray-400"></i>
+        <h3 class="text-xl font-semibold mt-4">No Internship Posts</h3>
+        <p class="text-gray-500 mt-2">
+            You haven’t created any internship posts yet.
+        </p>
+    </div>
+    {% endif %}
+</main>
+
+
+
+<!-- ================= STYLES ================= -->
+<style>
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+    const searchInput = document.getElementById("searchInput");
+const statusFilter = document.getElementById("statusFilter");
+const cards = document.querySelectorAll(".post-card");
+
+function filterPosts() {
+    const searchValue = searchInput.value.toLowerCase();
+    const statusValue = statusFilter.value;
+
+    cards.forEach(card => {
+        const title = card.dataset.title;
+        const status = card.dataset.status;
+
+        const matchesSearch = title.includes(searchValue);
+        const matchesStatus = statusValue === "all" || status === statusValue;
+
+        card.style.display = (matchesSearch && matchesStatus) ? "block" : "none";
+    });
+}
+
+searchInput.addEventListener("input", filterPosts);
+statusFilter.addEventListener("change", filterPosts);
+</script>
+
+</body>
+</html>

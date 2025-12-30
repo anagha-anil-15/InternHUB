@@ -9,6 +9,26 @@
 </style>
 </head>
 <body>
+<body>
+
+<!-- Success Message Popup -->
+{% if messages %}
+<div id="alertMessage"
+     style="position: fixed; top: 20px; right: 20px; background: #4CAF50;
+            color: white; padding: 12px 20px; border-radius: 6px;
+            font-size: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 9999;">
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+</div>
+
+<script>
+    setTimeout(function() {
+        document.getElementById("alertMessage").style.display = "none";
+    }, 2500);
+</script>
+{% endif %}
+
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height:100vh;">
 <div class="card p-4 shadow-lg" style="width:380px;">

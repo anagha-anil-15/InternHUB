@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Details - InternHUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+    <div class="px-6 py-4 flex justify-between items-center">
+
+        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+            <i class="ri-menu-line"></i>
+        </button>
+
+        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+
+        <div class="flex items-center gap-6">
+            <a href="{% url 'company_notifications' %}">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </a>
+
+            <!-- Profile -->
+            <div class="relative">
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+
+                <div id="profileMenu"
+                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6 overflow-y-auto
+              transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
+
+    <a href="{% url 'company_page' %}">
+        <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border sidebar-text">
+    </a>
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item active">
+            <i class="ri-building-fill"></i>
+            Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item">
+            <i class="ri-briefcase-fill"></i>
+            Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i>
+            Applications
+        </a>
+    </div>
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 pb-16 px-6 lg:ml-72">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-2xl shadow-lg flex justify-between items-center mb-10">
+        <div class="flex items-center gap-6">
+            <img src="{{ company.logo.url }}"
+                 class="w-28 h-28 rounded-full border-4 border-white object-cover">
+            <div>
+                <h2 class="text-3xl font-bold">{{ company.company_name }}</h2>
+                <p class="opacity-90">
+                    <i class="ri-map-pin-line"></i> {{ company.C_Location }}
+                </p>
+                {% if company.is_verified %}
+                    <span class="inline-block mt-2 bg-green-500 px-3 py-1 rounded-full text-sm">
+                        ✔ Verified
+                    </span>
+                {% else %}
+                    <span class="inline-block mt-2 bg-red-500 px-3 py-1 rounded-full text-sm">
+                        Pending
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <button onclick="openEditModal()"
+                class="bg-white text-blue-600 px-5 py-2 rounded-lg font-semibold hover:bg-blue-50">
+            <i class="ri-edit-line"></i> Edit
+        </button>
+    </div>
+
+    <!-- ================= ANALYTICS ================= -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h4 class="text-gray-500">Total Posts</h4>
+            <p class="text-3xl font-bold text-blue-600">{{ total_posts }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h4 class="text-gray-500">Applications</h4>
+            <p class="text-3xl font-bold text-green-600">{{ total_applications }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h4 class="text-gray-500">Shortlisted</h4>
+            <p class="text-3xl font-bold text-purple-600">{{ shortlisted_count }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h4 class="text-gray-500">Rating</h4>
+            <p class="text-3xl font-bold text-yellow-500">
+                ⭐ {{ avg_rating|default:"0.0" }}/5
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= DETAILS ================= -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h3 class="text-xl font-semibold mb-4">
+                <i class="ri-contacts-book-line text-blue-600"></i> Contact Info
+            </h3>
+            <p><b>Email:</b> {{ company.email }}</p>
+            <p><b>Phone:</b> {{ company.C_phone }}</p>
+            <p><b>Location:</b> {{ company.C_Location }}</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow">
+            <h3 class="text-xl font-semibold mb-4">
+                <i class="ri-building-4-line text-blue-600"></i> About Company
+            </h3>
+            <p class="text-gray-700 leading-relaxed">
+                {{ company.C_Description }}
+            </p>
+        </div>
+    </div>
+
+    <!-- ================= RATINGS ================= -->
+    <div class="bg-white p-8 rounded-xl shadow">
+        <h3 class="text-2xl font-semibold mb-6">
+            <i class="ri-star-fill text-yellow-400"></i> Company Reviews
+        </h3>
+
+        {% if ratings %}
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                {% for r in ratings %}
+                <div class="border-b pb-4">
+                    <p class="font-semibold">{{ r.student.name }}</p>
+                    <p class="text-yellow-500">⭐ {{ r.rating }}/5</p>
+                    <p class="text-gray-700">{{ r.review }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">No reviews yet.</p>
+        {% endif %}
+    </div>
+
+</main>
+
+<!-- ================= EDIT MODAL ================= -->
+<div id="editModal"
+     class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white w-full max-w-lg rounded-xl p-6">
+        <h3 class="text-2xl font-bold mb-4">Edit Company Details</h3>
+
+        <form method="post">
+            {% csrf_token %}
+            <input name="company_name" value="{{ company.company_name }}" class="w-full border p-3 rounded mb-3">
+            <input name="email" value="{{ company.email }}" class="w-full border p-3 rounded mb-3">
+            <input name="phone" value="{{ company.C_phone }}" class="w-full border p-3 rounded mb-3">
+            <input name="location" value="{{ company.C_Location }}" class="w-full border p-3 rounded mb-3">
+            <textarea name="description" class="w-full border p-3 rounded mb-4">{{ company.C_Description }}</textarea>
+
+            <div class="flex justify-end gap-4">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 rounded">
+                    Cancel
+                </button>
+                <button class="px-6 py-2 bg-blue-600 text-white rounded">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= STYLES ================= -->
+<style>
+.menu-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item.active {
+    background: #2563eb;
+    color: white;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+function openEditModal() {
+    document.getElementById("editModal").classList.remove("hidden");
+}
+function closeEditModal() {
+    document.getElementById("editModal").classList.add("hidden");
+}
+</script>
+
+</body>
+</html>

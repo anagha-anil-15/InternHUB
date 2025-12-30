@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% load static %}
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,34 +10,95 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
 
+  <style>
+      .description {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+      }
+      .description.expanded {
+          -webkit-line-clamp: unset;
+      }
+      .card-hover:hover {
+          transform: translateY(-5px);
+          transition: 0.25s ease;
+      }
+  </style>
 </head>
 
 <body class="bg-gray-100">
 
 <!-- NAVBAR -->
 <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-600">InternHub</h1>
+  <div class="px-6 py-4 flex justify-between items-center">
 
+    <!-- Mobile Menu Button -->
+    <button class="lg:hidden text-2xl">
+      <i class="ri-menu-line"></i>
+    </button>
+
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
+
+    <!-- Right Section -->
     <div class="flex items-center gap-6">
 
-      <a href="#" class="text-gray-700 font-medium hover:text-blue-600">Home</a>
-      <a href="#" class="text-gray-700 font-medium hover:text-blue-600">My Applications</a>
-      <a href="#" class="text-gray-700 font-medium hover:text-blue-600">Saved</a>
+      <!-- Welcome Text -->
+      <span class="hidden sm:block text-gray-700 text-sm">
+        Welcome,
+        <span class="font-semibold text-blue-600">
+          {{ student.name }}
+        </span>
+      </span>
 
       <!-- Notifications -->
-      <button class="relative text-gray-700 hover:text-blue-600">
-        <i class="ri-notification-3-line text-2xl"></i>
-        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">4</span>
-      </button>
+      <!-- Notifications -->
+<div class="relative">
+  <button onclick="toggleNotification()">
+    <i class="ri-notification-3-fill text-2xl text-gray-700"></i>
+  </button>
 
-      <!-- Profile Image -->
-      <div class="relative group">
-        <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full cursor-pointer border-2 border-blue-300">
-        <div class="hidden group-hover:block absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-40">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
-          <a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+  <!-- Notification Box -->
+  <div id="notificationBox"
+       class="hidden absolute right-0 mt-3 w-72 bg-white shadow-lg rounded-lg border z-50">
+    <div class="px-4 py-3 text-sm text-gray-700">
+      🔔 You have a new update in your student dashboard.
+    </div>
+  </div>
+</div>
+
+
+      <!-- Profile Dropdown -->
+      <div class="relative">
+        {% if student.img %}
+        <img src="{{ student.img.url }}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+        {% else %}
+        <img src="{% static 'images/default_user.png' }}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer">
+        {% endif %}
+
+        <div id="profileMenu"
+             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+          <a href="#"
+             class="block px-4 py-2 hover:bg-gray-100">
+            Profile
+          </a>
+
+          <a href="{% url 'student_settings' %}"
+             class="block px-4 py-2 hover:bg-gray-100">
+            Settings
+          </a>
+
+          <a href="{% url 'login_select' %}"
+             class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+            Logout
+          </a>
         </div>
       </div>
 
@@ -45,114 +108,313 @@
 
 
 <!-- MAIN LAYOUT -->
-<div class="flex pt-20">
+<div class="flex pt-24 px-6">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="w-72 bg-white shadow-lg h-screen p-6 sticky top-20 hidden lg:block">
+
+  <!-- SIDEBAR -->
+   <aside class="fixed top-24 left-6 w-72 h-[calc(100vh-6rem)]
+               bg-white rounded-xl shadow-xl p-6
+               hidden lg:block overflow-y-auto">
 
     <div class="flex flex-col items-center text-center">
-      <img src="https://i.pravatar.cc/120" class="w-28 h-28 rounded-full border-4 border-blue-500 shadow">
-      <h2 class="text-xl font-bold mt-3">John Doe</h2>
-      <p class="text-gray-500">B.Tech Computer Science</p>
+      {% if student.img %}
+      <img src="{{ student.img.url }}"
+           class="w-28 h-28 rounded-full object-cover border-4 border-blue-600 shadow">
+      {% else %}
+      <img src="{% static 'images/default_user.png' %}"
+           class="w-28 h-28 rounded-full border-4 border-blue-600 shadow">
+      {% endif %}
+
+      <h2 class="text-xl font-bold mt-3">{{ student.name }}</h2>
+      <p class="text-gray-500 text-sm">Student</p>
     </div>
 
     <hr class="my-5">
 
     <nav class="space-y-3 text-gray-700">
-      <a href="#" class="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
-        <i class="ri-home-4-line text-xl"></i> Dashboard
+
+
+        <!-- ACTIVE -->
+      <a href="{% url 'student_page' %}"
+         class="flex items-center gap-3 p-2 rounded bg-blue-100 text-blue-700 font-semibold">
+        <i class="ri-settings-3-line text-xl"></i> Dashboard
       </a>
 
-      <a href="#" class="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
+      <a href="{% url 'my_applications' %}"
+         class="flex items-center gap-3 p-2 rounded hover:bg-gray-200">
         <i class="ri-file-list-3-line text-xl"></i> My Applications
       </a>
 
-      <a href="#" class="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
-        <i class="ri-heart-3-line text-xl"></i> Saved Internships
+      <a href="{% url 'saved_internships' %}"
+         class="flex items-center gap-3 p-2 rounded hover:bg-gray-200">
+        <i class="ri-heart-fill text-xl text-red-500"></i> Saved Internships
       </a>
 
-      <a href="#" class="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
+
+    <a href="{% url 'student_settings' %}"
+         class="flex items-center gap-3 p-2 rounded hover:bg-gray-200">
         <i class="ri-settings-3-line text-xl"></i> Settings
       </a>
     </nav>
-
   </aside>
 
+  <!-- MAIN FEED -->
+  <main class="flex-1 ml-[18.5rem]">
+      {% if messages %}
+  <div class="mb-6">
+    {% for message in messages %}
+      <div class="flex items-center justify-between bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow">
+        <div class="flex items-center gap-2">
+          <i class="ri-checkbox-circle-fill text-xl"></i>
+          <span class="font-medium">{{ message }}</span>
+        </div>
+        <button onclick="this.parentElement.remove()"
+                class="text-green-700 hover:text-green-900">
+          <i class="ri-close-line text-xl"></i>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 px-6">
+    <h2 class="text-2xl font-bold mb-6">Latest Internships</h2>
 
-    <!-- FILTERS -->
-    <div class="bg-white p-4 shadow rounded-xl mb-6 flex gap-4">
+    {% for i in internships %}
+    <div class="bg-white p-6 rounded-xl shadow card-hover mb-6">
+        {% if i.company %}
+<a href="{% url 'rate_company' i.company.id %}"
+   class="text-sm text-yellow-600 hover:underline font-semibold">
+   ⭐ Rate {{ i.company.company_name }}
+</a>
+{% endif %}
 
-      <select class="p-2 border rounded-lg w-48">
-        <option>Filter by Role</option>
-        <option>Web Developer</option>
-        <option>UI/UX Designer</option>
-        <option>Python Developer</option>
-      </select>
 
-      <select class="p-2 border rounded-lg w-48">
-        <option>Filter by Category</option>
-        <option>IT</option>
-        <option>Marketing</option>
-        <option>Finance</option>
-      </select>
+      <!-- HEADER -->
+      <div class="flex items-center gap-4">
+        {% if i.logo %}
+          <img src="{{ i.logo.url }}" class="w-20 h-20 rounded-full object-cover mb-4">
+        {% endif %}
 
-      <button class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-        Apply Filters
+        <div>
+          <h3 class="text-xl font-bold">{{ i.internship_title }}</h3>
+          <p class="text-gray-500">{{ i.company_name }} • {{ i.location }}</p>
+        </div>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <p id="desc{{ i.id }}" class="description mt-4 text-gray-700">
+        {{ i.description }}
+      </p>
+
+      <button onclick="toggleDesc('desc{{ i.id }}', this)"
+              class="text-blue-600 mt-1 hover:underline">
+        Read more
       </button>
 
-    </div>
+      <!-- POST IMAGE -->
+      {% if i.image %}
+        <img src="{{ i.image.url }}" class="w-full max-h-[450px] object-contain rounded-xl mt-3 shadow bg-black/5 p-2">
+      {% endif %}
+
+      <!-- ACTIONS -->
+      <div class="flex justify-between items-center mt-6">
+
+        <!-- APPLY BUTTON -->
+        <form id="applyForm{{ i.id }}" action="{% url 'apply_internship' i.id %}" method="POST">
+            {% csrf_token %}
+
+            {% if i.id in applied_ids %}
+                <button
+                    class="bg-gray-400 text-white py-2 px-6 rounded-xl cursor-not-allowed" disabled>
+                    <i class="ri-check-line"></i> Applied
+                </button>
+            {% else %}
+                <button
+                    type="button"
+                    onclick="confirmApply({{ i.id }})"
+                    class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-xl">
+                    <i class="ri-send-plane-fill"></i> Apply
+                </button>
+
+            {% endif %}
+        </form>
+
+        {% if i.id in saved_ids %}
+<button class="border px-4 py-2 rounded-xl bg-yellow-300 cursor-not-allowed">
+  <i class="ri-bookmark-fill"></i> Saved
+</button>
+{% else %}
+<a href="{% url 'save_internship' i.id %}">
+  <button class="border px-4 py-2 rounded-xl hover:bg-gray-100">
+    <i class="ri-bookmark-line"></i> Save
+  </button>
+</a>
+{% endif %}
 
 
-    <!-- INTERNSHIP FEED -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <!-- CARD 1 -->
-      <div class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition">
-        <img src="https://source.unsplash.com/800x400/?office,work" class="w-full h-40 object-cover">
-
-        <div class="p-4">
-          <h2 class="text-xl font-bold">Web Development Internship</h2>
-          <p class="text-gray-600">Google • Bangalore</p>
-
-          <div class="flex justify-between text-sm mt-3">
-            <span class="bg-blue-100 text-blue-500 px-3 py-1 rounded-lg">₹15,000/month</span>
-            <span class="text-gray-500">3 Months</span>
-          </div>
-
-          <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-            Apply Now
-          </button>
-        </div>
       </div>
 
-      <!-- CARD 2 -->
-      <div class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition">
-        <img src="https://source.unsplash.com/800x400/?startup,team" class="w-full h-40 object-cover">
 
-        <div class="p-4">
-          <h2 class="text-xl font-bold">Python Developer Intern</h2>
-          <p class="text-gray-600">Infosys • Chennai</p>
-
-          <div class="flex justify-between text-sm mt-3">
-            <span class="bg-green-100 text-green-500 px-3 py-1 rounded-lg">₹12,000/month</span>
-            <span class="text-gray-500">6 Months</span>
-          </div>
-
-          <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-            Apply Now
-          </button>
-        </div>
-      </div>
 
     </div>
+
+    {% endfor %}
 
   </main>
-
 </div>
+
+<!-- APPLY CONFIRMATION POPUP -->
+<div id="applyPopup" class="fixed inset-0 bg-black/50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded-xl w-[350px] shadow-xl text-center">
+        <h2 class="text-xl font-bold text-gray-800">Confirm Apply</h2>
+        <p class="text-gray-600 mt-2">Are you sure you want to apply?</p>
+
+        <div class="flex justify-center gap-4 mt-5">
+            <button onclick="closePopup()"
+                    class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                Cancel
+            </button>
+            <button id="confirmBtn"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Apply
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Chatbot Floating Button -->
+<div id="chatbot-btn"
+     class="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-green-600">
+    💬
+</div>
+<!-- Chatbot Window -->
+<div id="chatbot-box"
+     class="fixed bottom-24 right-6 w-80 bg-white rounded-xl shadow-lg hidden flex flex-col">
+
+    <!-- Header -->
+    <div class="bg-green-500 text-white p-3 rounded-t-xl font-semibold">
+        InternHub Assistant
+    </div>
+
+    <!-- Messages -->
+    <div id="chat-messages"
+         class="flex-1 p-3 overflow-y-auto text-sm space-y-2">
+        <div class="bg-gray-100 p-2 rounded">
+            👋 Hi! How can I help you today?
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="p-2 border-t flex">
+        <input id="chat-input"
+               type="text"
+               placeholder="Type a message..."
+               class="flex-1 border rounded px-2 py-1 text-sm">
+        <button onclick="sendMessage()"
+                class="ml-2 bg-green-500 text-white px-3 rounded">
+            Send
+        </button>
+    </div>
+</div>
+
+<script>
+let selectedForm = null;
+
+function confirmApply(id) {
+    selectedForm = document.getElementById("applyForm" + id);
+    document.getElementById("applyPopup").classList.remove("hidden");
+    document.getElementById("applyPopup").classList.add("flex");
+}
+
+function closePopup() {
+    document.getElementById("applyPopup").classList.add("hidden");
+}
+
+document.getElementById("confirmBtn").addEventListener("click", function () {
+    if (selectedForm) {
+        selectedForm.submit();
+    }
+});
+
+function toggleDesc(id, btn) {
+    const box = document.getElementById(id);
+    box.classList.toggle("expanded");
+    btn.textContent = box.classList.contains("expanded") ? "Show less" : "Read more";
+}
+
+
+function confirmApply(internshipId) {
+    if (confirm("Do you want to apply for this internship?")) {
+        window.location.href =
+            "{% url 'confirm_apply' 0 %}".replace('0', internshipId);
+    }
+}
+
+
+    const chatbotBtn = document.getElementById("chatbot-btn");
+    const chatbotBox = document.getElementById("chatbot-box");
+    const chatMessages = document.getElementById("chat-messages");
+    const chatInput = document.getElementById("chat-input");
+
+    chatbotBtn.onclick = () => {
+        chatbotBox.classList.toggle("hidden");
+    };
+
+    function sendMessage() {
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+
+        // User message
+        chatMessages.innerHTML += `
+            <div class="text-right">
+                <div class="inline-block bg-green-500 text-white p-2 rounded">
+                    ${msg}
+                </div>
+            </div>
+        `;
+
+        chatInput.value = "";
+
+        setTimeout(() => {
+            chatMessages.innerHTML += `
+                <div class="bg-gray-100 p-2 rounded">
+                    ${getBotReply(msg)}
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 600);
+    }
+
+    function getBotReply(message) {
+        message = message.toLowerCase();
+
+        if (message.includes("apply")) {
+            return "📌 You can apply by clicking the Apply button on an internship.";
+        }
+        if (message.includes("saved")) {
+            return "⭐ You can view saved internships from your dashboard.";
+        }
+        if (message.includes("resume")) {
+            return "📄 You can upload or update your resume in Profile Settings.";
+        }
+        if (message.includes("internship")) {
+            return "💼 Browse internships on your dashboard and apply easily!";
+        }
+        if (message.includes("hello") || message.includes("hi")) {
+            return "👋 Hello! I'm here to help you.";
+        }
+
+        return "🤖 Sorry, I didn’t understand. Try asking about internships, resume, or applications.";
+    }
+
+function toggleNotification() {
+  document.getElementById("notificationBox").classList.toggle("hidden");
+}
+
+
+</script>
 
 </body>
 </html>

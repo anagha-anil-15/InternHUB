@@ -1,4 +1,5 @@
 from django.db import models
+
 class StudentDB(models.Model):
     name=models.CharField(max_length=50,blank=True,null=True)
     email=models.EmailField(max_length=200, null=True, blank=True)
@@ -27,5 +28,7 @@ class InternshipPostDB(models.Model):
     description = models.TextField()
     posted_date = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='internship_images/', null=True, blank=True)
+    logo = models.ImageField(upload_to='Company_Logo/', null=True, blank=True)
+
 
 # Create your models here.

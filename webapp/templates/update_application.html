@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
+
+    <h2 class="text-2xl font-bold mb-6">Application Review</h2>
+
+    <p class="mb-4">
+        <b>Student:</b> {{ application.student.name }} <br>
+        <b>Internship:</b> {{ application.internship.internship_title }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- STATUS -->
+        <label class="block font-semibold mb-2">Application Status</label>
+        <select name="status"
+                class="w-full p-3 border rounded-lg mb-4">
+            <option value="Applied"
+                {% if application.status == "Applied" %}selected{% endif %}>
+                Applied
+            </option>
+            <option value="Shortlisted"
+                {% if application.status == "Shortlisted" %}selected{% endif %}>
+                Shortlisted
+            </option>
+            <option value="Rejected"
+                {% if application.status == "Rejected" %}selected{% endif %}>
+                Rejected
+            </option>
+        </select>
+
+        <!-- NOTE -->
+        <label class="block font-semibold mb-2">
+            Company Note (Internal / Student Visible)
+        </label>
+        <textarea name="company_note"
+                  rows="4"
+                  class="w-full p-3 border rounded-lg mb-6"
+                  placeholder="Write feedback or next steps...">{{ application.company_note }}</textarea>
+
+        <div class="flex justify-between">
+            <a href="{% url 'company_applications' %}"
+               class="text-gray-600 hover:underline">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Save Changes
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

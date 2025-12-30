@@ -1,5 +1,7 @@
 from django.urls import path
 from Admin_Internship import views
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns=[
     path('index_page/',views.index_page,name="index_page"),
     path('add_student/',views.add_student,name="add_student"),
@@ -26,3 +28,5 @@ urlpatterns=[
 
 
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

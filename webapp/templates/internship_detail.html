@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ internship.internship_title }} - InternHUB</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+  <div class="px-6 py-4 flex justify-between items-center">
+
+    <!-- Mobile Menu -->
+    <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
+      <i class="ri-menu-line"></i>
+    </button>
+
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
+
+    <!-- Right -->
+    <div class="flex items-center gap-6">
+
+      <span class="hidden sm:block text-gray-700 text-sm">
+        Welcome,
+        <span class="font-semibold text-blue-600">{{ student.name }}</span>
+      </span>
+
+      <!-- Profile -->
+      <div class="relative">
+        {% if student.img %}
+        <img src="{{ student.img.url }}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+        {% else %}
+        <img src="{% static 'images/default_user.png' %}"
+             onclick="toggleProfileMenu()"
+             class="w-10 h-10 rounded-full border cursor-pointer">
+        {% endif %}
+
+        <div id="profileMenu"
+             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+          <a href="{% url 'student_settings' %}"
+             class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+          <a href="{% url 'login_select' %}"
+             class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- ================= MAIN LAYOUT ================= -->
+<div class="flex pt-24 px-6">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside id="sidebar"
+         class="fixed top-0 left-0 z-40 w-72 h-full
+                bg-white shadow-xl p-6
+                transform -translate-x-full transition-transform
+                lg:translate-x-0 lg:top-24 lg:left-6
+                lg:h-[calc(100vh-6rem)]
+                rounded-none lg:rounded-xl
+                overflow-y-auto">
+
+    <!-- Close (mobile) -->
+    <button onclick="toggleSidebar()"
+            class="lg:hidden absolute top-4 right-4 text-2xl">
+      <i class="ri-close-line"></i>
+    </button>
+
+    <div class="flex flex-col items-center text-center mt-8 lg:mt-0">
+      {% if student.img %}
+      <img src="{{ student.img.url }}"
+           class="w-28 h-28 rounded-full object-cover border-4 border-blue-600 shadow">
+      {% else %}
+      <img src="{% static 'images/default_user.png' %}"
+           class="w-28 h-28 rounded-full border-4 border-blue-600 shadow">
+      {% endif %}
+
+      <h2 class="text-xl font-bold mt-3">{{ student.name }}</h2>
+      <p class="text-gray-500 text-sm">Student</p>
+    </div>
+
+    <hr class="my-5">
+
+    <nav class="space-y-3 text-gray-700">
+
+      <a href="{% url 'student_page' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="student_page">
+        <i class="ri-home-4-line text-xl"></i> Dashboard
+      </a>
+
+      <a href="{% url 'my_applications' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="my_applications">
+        <i class="ri-file-list-3-line text-xl"></i> My Applications
+      </a>
+
+      <a href="{% url 'saved_internships' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="saved_internships">
+        <i class="ri-heart-fill text-xl text-red-500"></i> Saved Internships
+      </a>
+
+      <a href="{% url 'student_settings' %}"
+         class="nav-link flex items-center gap-3 p-2 rounded hover:bg-gray-200"
+         data-path="student_settings">
+        <i class="ri-settings-3-line text-xl"></i> Settings
+      </a>
+
+    </nav>
+  </aside>
+
+  <!-- ================= CONTENT ================= -->
+  <main class="flex-1 ml-0 lg:ml-[18.5rem]">
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+    <!-- CARD -->
+    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+
+      <!-- HEADER -->
+      <div class="p-8 border-b">
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+
+          {% if internship.logo %}
+          <img src="{{ internship.logo.url }}"
+               class="w-20 h-20 rounded-2xl object-cover border shadow">
+          {% endif %}
+
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">
+              {{ internship.internship_title }}
+            </h1>
+            <p class="text-gray-600 mt-1">
+              {{ internship.company_name }} • {{ internship.location }}
+            </p>
+          </div>
+
+        </div>
+
+        <!-- TAGS -->
+        <div class="flex flex-wrap gap-3 mt-6">
+          <span class="px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
+            {{ internship.internship_type }}
+          </span>
+          <span class="px-4 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+            {{ internship.duration }}
+          </span>
+          <span class="px-4 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+            ₹ {{ internship.stipend }}
+          </span>
+        </div>
+
+      </div>
+
+      <!-- BODY -->
+      <div class="p-8 space-y-8">
+
+        <!-- DESCRIPTION -->
+        <section>
+          <h2 class="text-xl font-semibold mb-2">Internship Description</h2>
+          <p class="text-gray-700 leading-relaxed">
+            {{ internship.description }}
+          </p>
+        </section>
+
+        {% if internship.responsibilities %}
+        <section>
+          <h2 class="text-xl font-semibold mb-2">Responsibilities</h2>
+          <p class="text-gray-700 leading-relaxed">
+            {{ internship.responsibilities }}
+          </p>
+        </section>
+        {% endif %}
+
+        {% if internship.skills %}
+        <section>
+          <h2 class="text-xl font-semibold mb-2">Required Skills</h2>
+          <p class="text-gray-700">
+            {{ internship.skills }}
+          </p>
+        </section>
+        {% endif %}
+
+        {% if internship.image %}
+        <section>
+          <img src="{{ internship.image.url }}"
+               class="w-full max-h-[420px] object-contain rounded-xl border shadow">
+        </section>
+        {% endif %}
+
+      </div>
+
+      <!-- ACTION BAR -->
+      <div class="bg-gray-50 p-6 border-t flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
+
+        <div class="flex gap-3">
+
+          {% if applied %}
+          <button class="bg-gray-400 text-white px-6 py-2 rounded-lg cursor-not-allowed">
+            <i class="ri-check-line"></i> Applied
+          </button>
+          {% else %}
+          <a href="{% url 'confirm_apply' internship.id %}"
+             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+            <i class="ri-send-plane-fill"></i> Apply Now
+          </a>
+          {% endif %}
+
+          {% if saved %}
+          <button class="bg-yellow-300 px-6 py-2 rounded-lg cursor-not-allowed">
+            <i class="ri-bookmark-fill"></i> Saved
+          </button>
+          {% else %}
+          <a href="{% url 'save_internship' internship.id %}"
+             class="border px-6 py-2 rounded-lg hover:bg-gray-100">
+            <i class="ri-bookmark-line"></i> Save
+          </a>
+          {% endif %}
+
+        </div>
+
+        <a href="{% url 'saved_internships' %}"
+           class="text-blue-600 font-medium hover:underline">
+          ← Back to Saved Internships
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+function toggleProfileMenu() {
+  document.getElementById("profileMenu").classList.toggle("hidden");
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar")
+    .classList.toggle("-translate-x-full");
+}
+
+/* Active menu */
+const currentPath = "{{ request.resolver_match.url_name }}";
+document.querySelectorAll(".nav-link").forEach(link => {
+  if (link.dataset.path === currentPath) {
+    link.classList.add("bg-blue-100", "text-blue-700", "font-semibold");
+  }
+});
+</script>
+
+</body>
+</html>

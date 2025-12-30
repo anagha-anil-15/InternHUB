@@ -4,6 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
+from django.utils.dateparse import parse_datetime
 def index_page(request):
     student=StudentDB.objects.count()
     company=CompanyDB.objects.count()
@@ -38,24 +39,22 @@ def update_student_data(request,up_id):
         mobile = request.POST.get('contact')
         education = request.POST.get('degree')
         skill = request.POST.get('skills')
-        if request.FILES.get('resume'):
-            resume=request.FILES
+        resume=request.FILES.get('resume')
         try:
             img = request.FILES['img']
             fs=FileSystemStorage()
             file=fs.save(img.name,img)
         except MultiValueDictKeyError:
             file=StudentDB.objects.get(id=up_id).img
-
-
         passw = request.POST.get('password')
         c_passw = request.POST.get('confirm_password')
-        StudentDB.objects.filter(id=up_id).update(name=name,email=mail,number=mobile,Degree=education,skills=skill,resume=file,img=file,password=passw,is_verified=c_passw)
+        StudentDB.objects.filter(id=up_id).update(name=name,email=mail,number=mobile,Degree=education,skills=skill,resume=resume,img=file,password=passw,is_verified=c_passw)
         return redirect(display_student_data)
-def delete_student_data(request,del_id):
-    data=StudentDB.objects.filter(id=del_id)
+def delete_student_data(request, del_id):
+    data= StudentDB.objects.get(id=del_id)
     data.delete()
-    return redirect(display_student_data)
+    return redirect(display_student_data)  # Must match URL name
+
 
 
 
@@ -119,8 +118,9 @@ def save_internship_post(request):
         desc=request.POST.get('description')
         post=request.POST.get('posted_date')
         image=request.FILES['image']
+        logo=request.FILES['logo']
 
-        obj=InternshipPostDB(internship_title=title,company_name=comp_name,location=loca,stipend=salary,duration=time,description=desc,image=image,posted_date=post)
+        obj=InternshipPostDB(internship_title=title,company_name=comp_name,location=loca,stipend=salary,duration=time,description=desc,image=image,posted_date=post,logo=logo)
         obj.save()
         return redirect(add_internship_post)
 def display_internship_data(request):
@@ -129,8 +129,15 @@ def display_internship_data(request):
 def edit_internship_data(request,post_id):
     post=InternshipPostDB.objects.get(id=post_id)
     return render(request,"Edit_Internship_data.html",{'post':post})
-def update_internship_data(request,up_id):
-    if request.method=="POST":
+from datetime import datetime
+from django.shortcuts import redirect
+from django.utils.timezone import make_aware
+from django.utils.datastructures import MultiValueDictKeyError
+from django.core.files.storage import FileSystemStorage
+from .models import InternshipPostDB
+
+def update_internship_data(request, up_id):
+    if request.method == "POST":
         title = request.POST.get('internship_title')
         comp_name = request.POST.get('company_name')
         loca = request.POST.get('location')
@@ -138,15 +145,45 @@ def update_internship_data(request,up_id):
         time = request.POST.get('duration')
         desc = request.POST.get('description')
         post = request.POST.get('posted_date')
+
+        # Convert posted_date string to proper datetime format
+        try:
+            if len(post) == 10:
+                post = post + " 00:00:00"
+            posted_date = make_aware(datetime.strptime(post, "%Y-%m-%d %H:%M:%S"))
+        except:
+            posted_date = InternshipPostDB.objects.get(id=up_id).posted_date
+
+        # Handle Image
         try:
             image = request.FILES['image']
-            fs=FileSystemStorage()
-            file=fs.save(image.name,image)
+            fs = FileSystemStorage()
+            image_file = fs.save(image.name, image)
         except MultiValueDictKeyError:
-            file=InternshipPostDB.objects.get(id=up_id).image
+            image_file = InternshipPostDB.objects.get(id=up_id).image
 
-        InternshipPostDB.objects.filter(id=up_id).update(internship_title=title,company_name=comp_name,location=loca,stipend=salary,duration=time,description=desc,image=file,posted_date=post)
-        return redirect(display_internship_data)
+        # Handle Logo
+        try:
+            logo = request.FILES['logo']
+            fs = FileSystemStorage()
+            logo_file = fs.save(logo.name, logo)
+        except MultiValueDictKeyError:
+            logo_file = InternshipPostDB.objects.get(id=up_id).logo
+
+        InternshipPostDB.objects.filter(id=up_id).update(
+            internship_title=title,
+            company_name=comp_name,
+            location=loca,
+            stipend=salary,
+            duration=time,
+            description=desc,
+            image=image_file,
+            posted_date=posted_date,
+            logo=logo_file
+        )
+
+        return redirect(display_internship_data)  # Use your URL name
+
 def delete_internship_data(request,del_id):
     data=InternshipPostDB.objects.filter(id=del_id)
     data.delete()
