@@ -7,7 +7,7 @@ urlpatterns=[
     path("signup/", views.signup_select, name="signup_select"),
     path("signup/student/", views.signup_student, name="signup_student"),
     path("signup/company/", views.signup_company, name="signup_company"),
-    path("verify-otp/", views.verify_otp, name="verify_otp"),
+
     path("login/action/", views.login, name="login_action"),
     path("logout/", views.logout_view, name="logout"),
     path("demo/", views.demo, name="demo"),
@@ -29,19 +29,13 @@ urlpatterns=[
     path("rate-company/<int:company_id>/", views.rate_company, name="rate_company"),
     path("company-post/edit/<int:post_id>/", views.edit_internship_post, name="edit_internship_post"),
     path("company-post/delete/<int:post_id>/", views.delete_internship_post, name="delete_internship_post"),
-    path('saved-internship/remove/<int:id>/',views.remove_saved_internship,name='remove_saved_internship'),
-
-
-
-
-
-
-
-
-
-
-
+    path("saved/remove/<int:id>/",views.remove_saved_internship,name="remove_saved_internship"),
+    path("student/notifications/", views.student_notifications, name="student_notifications"),
+    path("forgot-password/", views.forgot_password, name="forgot_password"),
+    path("verify-forgot-otp/", views.verify_forgot_otp, name="verify_forgot_otp"),
+    path("reset-password/", views.reset_password, name="reset_password"),
 
 
 
 ]
+

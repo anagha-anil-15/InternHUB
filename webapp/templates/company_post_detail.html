@@ -12,44 +12,67 @@
 
 <!-- ================= TOP NAVBAR ================= -->
 <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-    <div class="px-6 py-4 flex justify-between items-center">
+  <div class="px-6 py-4 flex items-center">
 
-        <!-- Mobile Menu -->
-        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
-            <i class="ri-menu-line"></i>
-        </button>
+    <!-- LEFT -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
 
-        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+    <!-- RIGHT (Bell + Profile) -->
+    <div class="flex items-center gap-6 ml-auto">
 
-        <div class="flex items-center gap-6">
-            <a href="{% url 'company_notifications' %}">
-                <i class="ri-notification-3-fill text-2xl"></i>
-            </a>
+      <!-- Bell -->
+      <a href="{% url 'company_notifications' %}" class="relative">
+        <i class="ri-notification-3-fill text-2xl text-gray-700"></i>
 
-            <!-- Profile -->
-            <div class="relative">
-                {% if company.logo %}
+        {% if unread_notification_count > 0 %}
+        <span
+          class="absolute -top-1 -right-1 bg-red-600 text-white text-xs
+                 w-5 h-5 flex items-center justify-center rounded-full">
+          {{ unread_notification_count }}
+        </span>
+        {% endif %}
+      </a>
+
+      <!-- Profile -->
+      <div class="relative">
                 <img src="{{ company.logo.url }}"
                      onclick="toggleProfileMenu()"
                      class="w-10 h-10 rounded-full border cursor-pointer object-cover">
-                {% else %}
-                <img src="https://via.placeholder.com/40"
-                     onclick="toggleProfileMenu()"
-                     class="w-10 h-10 rounded-full border cursor-pointer">
-                {% endif %}
 
                 <div id="profileMenu"
-                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
-                            Logout
-                        </button>
-                    </form>
-                </div>
+     class="hidden absolute right-0 mt-3 w-48 bg-white
+            border border-gray-200 rounded-xl shadow-xl z-50
+            overflow-hidden">
+
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+
+        <button
+            class="flex items-center gap-3 w-full px-5 py-3
+                   text-sm font-medium text-red-600
+                   hover:bg-red-50 transition duration-200">
+
+            <!-- Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-5 w-5"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-14V3" />
+            </svg>
+
+            Logout
+        </button>
+    </form>
+</div>
+
             </div>
-        </div>
+
     </div>
+  </div>
 </nav>
 
 <!-- ================= SIDEBAR ================= -->
@@ -58,8 +81,10 @@
               transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
 
     {% if company.logo %}
+    <a href="{% url 'company_page' %}">
+
     <img src="{{ company.logo.url }}"
-         class="w-24 h-24 rounded-full mx-auto object-cover border">
+         class="w-24 h-24 rounded-full mx-auto object-cover border"></a>
     {% else %}
     <img src="https://via.placeholder.com/100"
          class="w-24 h-24 rounded-full mx-auto border">

@@ -57,22 +57,18 @@
         {% endif %}
 
         <div id="profileMenu"
-             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            Profile
-          </a>
+     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-xl z-50 border">
+  <a href="{% url 'student_settings' %}"
+     class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
+    <i class="ri-user-line"></i> Profile
+  </a>
 
-          <a href="{% url 'student_settings' %}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            Settings
-          </a>
+  <a href="{% url 'login_select' %}"
+     class="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50">
+    <i class="ri-logout-box-r-line"></i> Logout
+  </a>
+</div>
 
-          <a href="{% url 'login_select' %}"
-             class="block px-4 py-2 text-red-600 hover:bg-gray-100">
-            Logout
-          </a>
-        </div>
       </div>
 
     </div>
@@ -149,21 +145,27 @@
 
     <!-- Flash Messages -->
     {% if messages %}
-    <div class="space-y-4">
-      {% for message in messages %}
-      <div class="flex items-center justify-between bg-green-100 border border-green-300
-                  text-green-700 px-5 py-4 rounded-xl shadow">
-        <div class="flex items-center gap-3">
-          <i class="ri-checkbox-circle-fill text-2xl"></i>
-          <span class="font-medium">{{ message }}</span>
-        </div>
-        <button onclick="this.parentElement.remove()">
-          <i class="ri-close-line text-xl"></i>
-        </button>
+<div id="popupMessage"
+     class="fixed inset-0 flex items-center justify-center
+            bg-black/40 z-[9999]">
+
+  <div class="bg-white w-[380px] p-6 rounded-2xl shadow-2xl text-center">
+
+    {% for message in messages %}
+      <div class="text-green-500 text-5xl mb-3">
+        <i class="ri-checkbox-circle-fill"></i>
       </div>
-      {% endfor %}
-    </div>
-    {% endif %}
+
+      <p class="text-gray-700 font-medium mb-5">
+        {{ message }}
+      </p>
+    {% endfor %}
+
+
+  </div>
+</div>
+{% endif %}
+
 
     <!-- Settings Card -->
     <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -293,6 +295,16 @@ document.addEventListener("click", function (event) {
     menu.classList.add("hidden");
   }
 });
+
+function closePopupMsg() {
+  const popup = document.getElementById("popupMessage");
+  if (popup) popup.remove();
+}
+
+// auto close after 3 seconds (optional)
+setTimeout(closePopupMsg, 3000);
+
+
 </script>
 
 </body>

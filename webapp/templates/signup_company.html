@@ -66,7 +66,8 @@
             <!-- Phone -->
             <div class="mb-3 position-relative">
                 <i class="bi bi-telephone-fill input-icon"></i>
-                <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
+                <input type="text" name="phone" class="form-control" placeholder="Phone Number" maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" required>
+
             </div>
 
             <!-- Location -->
@@ -90,13 +91,15 @@
             <!-- Password -->
             <div class="mb-3 position-relative">
                 <i class="bi bi-lock-fill input-icon"></i>
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                <input type="password" name="password" class="form-control" placeholder="Password" pattern="(?=.*[A-Z])(?=.*[\W_]).{6,}" title="Min 6 chars, 1 uppercase, 1 special character" required>
+
             </div>
 
             <!-- Confirm Password -->
             <div class="mb-4 position-relative">
                 <i class="bi bi-shield-lock-fill input-icon"></i>
                 <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+
             </div>
 
             <!-- Submit -->

@@ -42,19 +42,24 @@
              onclick="toggleProfileMenu()"
              class="w-10 h-10 rounded-full border cursor-pointer object-cover">
         {% else %}
-        <img src="{% static 'images/default_user.png' %}"
+        <img src="{% static 'images/default_user.png' }}"
              onclick="toggleProfileMenu()"
              class="w-10 h-10 rounded-full border cursor-pointer">
         {% endif %}
 
         <div id="profileMenu"
-             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-          <a href="{% url 'student_settings' %}"
-             class="block px-4 py-2 hover:bg-gray-100">Settings</a>
-          <a href="{% url 'login_select' %}"
-             class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
-        </div>
+     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-xl z-50 border">
+  <a href="{% url 'student_settings' %}"
+     class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
+    <i class="ri-user-line"></i> Profile
+  </a>
+
+  <a href="{% url 'login_select' %}"
+     class="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50">
+    <i class="ri-logout-box-r-line"></i> Logout
+  </a>
+</div>
+
       </div>
 
     </div>
@@ -218,17 +223,42 @@
         {% endif %}
 
         <!-- FOOTER -->
-        <div class="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+        <!-- FOOTER -->
+<div class="mt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
 
-          <p class="text-xs text-gray-400">
-            Applied on {{ app.date_applied|date:"M d, Y" }}
-          </p>
+  <p class="text-xs text-gray-400">
+    Applied on {{ app.date_applied|date:"M d, Y" }}
+  </p>
 
-          <a href="{% url 'internship_detail' app.internship.id %}"
-             class="text-blue-600 text-sm font-semibold hover:underline">
-            View Internship →
-          </a>
-        </div>
+  <div class="flex gap-4 items-center">
+    <a href="{% url 'internship_detail' app.internship.id %}"
+       class="text-blue-600 text-sm font-semibold hover:underline">
+      View Internship →
+    </a>
+
+    {% if app.status == "Shortlisted" and app.company %}
+
+    {% if app.is_rated %}
+        <!-- ✅ Already Rated -->
+        <span class="text-green-600 text-sm font-semibold flex items-center gap-1">
+            <i class="ri-checkbox-circle-fill"></i> Rated
+        </span>
+    {% else %}
+        <!-- ⭐ Rate Company -->
+        <a href="{% url 'rate_company' app.company.id %}"
+           class="text-yellow-600 text-sm font-semibold hover:underline flex items-center gap-1">
+            <i class="ri-star-fill"></i> Rate Company
+        </a>
+    {% endif %}
+
+
+
+{% endif %}
+
+  </div>
+
+</div>
+
 
       </div>
       {% endfor %}
@@ -253,6 +283,30 @@
 
 
 </div>
+{% if messages %}
+<div id="popupMessage"
+     class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+
+  <div class="bg-white w-[360px] p-6 rounded-2xl shadow-2xl text-center">
+
+    {% for message in messages %}
+      <div class="text-green-500 text-5xl mb-3">
+        <i class="ri-checkbox-circle-fill"></i>
+      </div>
+
+      <p class="text-gray-700 font-medium mb-4">
+        {{ message }}
+      </p>
+    {% endfor %}
+
+    <button onclick="closePopupMsg()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl">
+      OK
+    </button>
+  </div>
+</div>
+{% endif %}
+
 
 <!-- ================= SCRIPTS ================= -->
 <script>
@@ -291,7 +345,13 @@ function filterApplications() {
 
 searchInput.addEventListener("input", filterApplications);
 statusFilter.addEventListener("change", filterApplications);
+function closePopupMsg() {
+  const popup = document.getElementById("popupMessage");
+  if (popup) popup.remove();
+}
 
+// auto-close after 3 seconds
+setTimeout(closePopupMsg, 3000);
 
 </script>
 

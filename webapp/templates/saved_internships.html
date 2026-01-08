@@ -42,19 +42,24 @@
              onclick="toggleProfileMenu()"
              class="w-10 h-10 rounded-full border cursor-pointer object-cover">
         {% else %}
-        <img src="{% static 'images/default_user.png' %}"
+        <img src="{% static 'images/default_user.png' }}"
              onclick="toggleProfileMenu()"
              class="w-10 h-10 rounded-full border cursor-pointer">
         {% endif %}
 
         <div id="profileMenu"
-             class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-          <a href="{% url 'student_settings' %}"
-             class="block px-4 py-2 hover:bg-gray-100">Settings</a>
-          <a href="{% url 'login_select' %}"
-             class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
-        </div>
+     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-xl rounded-xl z-50 border">
+  <a href="{% url 'student_settings' %}"
+     class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
+    <i class="ri-user-line"></i> Profile
+  </a>
+
+  <a href="{% url 'login_select' %}"
+     class="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50">
+    <i class="ri-logout-box-r-line"></i> Logout
+  </a>
+</div>
+
       </div>
 
     </div>
@@ -189,14 +194,17 @@
           </a>
 
           <!-- REMOVE -->
-          <form action="{% url 'remove_saved_internship' save.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit"
-            class="text-red-500 hover:text-red-700 text-sm flex items-center gap-1">
-        <i class="ri-delete-bin-line"></i>
-        Remove
-    </button>
+          <form method="post" class="removeForm"
+      data-action="{% url 'remove_saved_internship' save.id %}">
+  {% csrf_token %}
+  <button type="button"
+          onclick="openRemovePopup(this)"
+          class="text-red-500 hover:text-red-700 text-sm flex items-center gap-1">
+    <i class="ri-delete-bin-line"></i>
+    Remove
+  </button>
 </form>
+
 
 
         </div>
@@ -225,6 +233,38 @@
 
 </main>
 
+</div>
+<!-- REMOVE CONFIRMATION POPUP -->
+<div id="removePopup"
+     class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+  <div class="bg-white w-[360px] p-6 rounded-2xl shadow-2xl text-center animate-scaleIn">
+
+    <div class="text-red-500 text-5xl mb-3">
+      <i class="ri-delete-bin-6-fill"></i>
+    </div>
+
+    <h2 class="text-lg font-bold text-gray-800">
+      Remove Internship?
+    </h2>
+
+    <p class="text-gray-600 mt-2">
+      Are you sure you want to remove this saved internship?
+    </p>
+
+    <div class="flex justify-center gap-4 mt-6">
+      <button onclick="closeRemovePopup()"
+              class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+        Cancel
+      </button>
+
+      <button onclick="confirmRemove()"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+        Yes, Remove
+      </button>
+    </div>
+
+  </div>
 </div>
 
 <!-- ================= SCRIPTS ================= -->
@@ -262,6 +302,26 @@ searchInput?.addEventListener("keyup", () => {
     card.style.display = title.includes(value) ? "flex" : "none";
   });
 });
+
+
+let selectedRemoveForm = null;
+
+function openRemovePopup(button) {
+  selectedRemoveForm = button.closest("form");
+  document.getElementById("removePopup").classList.remove("hidden");
+  document.getElementById("removePopup").classList.add("flex");
+}
+
+function closeRemovePopup() {
+  document.getElementById("removePopup").classList.add("hidden");
+}
+
+function confirmRemove() {
+  if (selectedRemoveForm) {
+    selectedRemoveForm.action = selectedRemoveForm.dataset.action;
+    selectedRemoveForm.submit();
+  }
+}
 
 
 </script>

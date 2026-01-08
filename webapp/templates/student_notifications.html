@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <title>Notifications | InternHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-blue-50 to-gray-100 min-h-screen">
+
+<!-- Container -->
+<div class="max-w-4xl mx-auto pt-14 pb-20 px-4">
+
+    <!-- Header Card -->
+    <div class="bg-white rounded-3xl shadow-xl p-6 mb-8 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="bg-blue-600 text-white w-12 h-12 flex items-center justify-center rounded-2xl">
+                <i class="ri-notification-3-fill text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Notifications</h1>
+                <p class="text-sm text-gray-500">
+                    Stay updated with your internship activities
+                </p>
+            </div>
+        </div>
+
+        <a href="{% url 'student_page' %}"
+           class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            Back to Dashboard →
+        </a>
+    </div>
+
+    <!-- Notifications -->
+    {% if notifications %}
+    <div class="relative">
+
+        <!-- Timeline Line -->
+        <div class="absolute left-6 top-0 h-full w-0.5 bg-blue-100"></div>
+
+        <div class="space-y-6 pl-12">
+        {% for n in notifications %}
+            <div class="relative group">
+
+                <!-- Dot -->
+                <div class="absolute -left-[2.2rem] top-6">
+                    <span class="w-4 h-4 rounded-full block
+                        {% if not n.is_read %}
+                            bg-blue-600 ring-4 ring-blue-200
+                        {% else %}
+                            bg-gray-300
+                        {% endif %}
+                    "></span>
+                </div>
+
+                <!-- Notification Card -->
+                <div class="bg-white rounded-2xl shadow-md p-5
+                            hover:shadow-xl transition-all duration-300
+                            {% if not n.is_read %}
+                                border-l-4 border-blue-600 bg-blue-50/40
+                            {% endif %}">
+
+                    <!-- Content -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-100 text-blue-600 p-3 rounded-xl">
+                            <i class="ri-briefcase-fill text-xl"></i>
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">
+                                {{ n.message }}
+                            </p>
+
+                            <p class="text-sm text-gray-500 mt-1">
+                                <i class="ri-time-line"></i>
+                                {{ n.created_at|date:"M d, Y • h:i A" }}
+                            </p>
+                        </div>
+
+                        {% if not n.is_read %}
+                        <span class="text-xs bg-blue-600 text-white px-3 py-1 rounded-full">
+                            NEW
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-white rounded-3xl shadow-lg p-16 text-center">
+        <div class="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <i class="ri-notification-off-line text-4xl text-gray-400"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-700">
+            You're all caught up 🎉
+        </h2>
+        <p class="text-gray-500 mt-2">
+            No new notifications at the moment.
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

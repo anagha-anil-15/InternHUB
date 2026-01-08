@@ -69,7 +69,15 @@
             <!-- Phone -->
             <div class="mb-3 position-relative">
                 <i class="bi bi-telephone-fill input-icon"></i>
-                <input type="text" name="number" class="form-control" placeholder="Phone Number" required>
+                <input type="text"
+       name="number"
+       class="form-control"
+       placeholder="Phone Number"
+       maxlength="10"
+       pattern="[0-9]{10}"
+       title="Phone number must be exactly 10 digits"
+       required>
+
             </div>
 
             <!-- Skills -->
@@ -93,13 +101,23 @@
             <!-- Password -->
             <div class="mb-3 position-relative">
                 <i class="bi bi-lock-fill input-icon"></i>
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                <input type="password"
+       id="password"
+       name="password"
+       class="form-control"
+       placeholder="Password"
+       required>
             </div>
 
             <!-- Confirm Password -->
             <div class="mb-4 position-relative">
                 <i class="bi bi-shield-lock-fill input-icon"></i>
-                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+                <input type="password"
+       id="confirm_password"
+       name="confirm_password"
+       class="form-control"
+       placeholder="Confirm Password"
+       required>
             </div>
 
             <!-- Submit -->
@@ -114,6 +132,44 @@
         </p>
     </div>
 </div>
+<script>
+document.querySelector("form").addEventListener("submit", function (e) {
+
+    const phone = document.querySelector("input[name='number']").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+
+    // Phone validation
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        e.preventDefault();
+        return;
+    }
+
+    // Password rules:
+    // min 6 chars, 1 uppercase, 1 special char
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{6,}$/;
+
+    if (!passwordRegex.test(password)) {
+        alert(
+            "Password must:\n" +
+            "- Be at least 6 characters long\n" +
+            "- Contain at least 1 uppercase letter\n" +
+            "- Contain at least 1 special character"
+        );
+        e.preventDefault();
+        return;
+    }
+
+    // Confirm password match
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        e.preventDefault();
+        return;
+    }
+});
+</script>
 
 </body>
 </html>

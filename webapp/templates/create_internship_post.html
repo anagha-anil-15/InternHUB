@@ -2,59 +2,185 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Internship Post</title>
+    <title>Create Internship Post - InternHUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">
 
-<div class="max-w-3xl mx-auto mt-24 bg-white p-8 rounded-xl shadow-lg">
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+  <div class="px-6 py-4 flex items-center">
 
-    <h2 class="text-3xl font-bold text-blue-600 mb-6">
-        Create Internship Post
-    </h2>
+    <!-- LEFT -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-5">
+    <!-- RIGHT (Bell + Profile) -->
+    <div class="flex items-center gap-6 ml-auto">
+
+      <!-- Bell -->
+      <a href="{% url 'company_notifications' %}" class="relative">
+        <i class="ri-notification-3-fill text-2xl text-gray-700"></i>
+
+        {% if unread_notification_count > 0 %}
+        <span
+          class="absolute -top-1 -right-1 bg-red-600 text-white text-xs
+                 w-5 h-5 flex items-center justify-center rounded-full">
+          {{ unread_notification_count }}
+        </span>
+        {% endif %}
+      </a>
+
+      <!-- Profile -->
+      <div class="relative">
+                <img src="{{ company.logo.url }}"
+                     onclick="toggleProfileMenu()"
+                     class="w-10 h-10 rounded-full border cursor-pointer object-cover">
+
+                <div id="profileMenu"
+     class="hidden absolute right-0 mt-3 w-48 bg-white
+            border border-gray-200 rounded-xl shadow-xl z-50
+            overflow-hidden">
+
+    <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
 
-        <input type="text" name="internship_title"
-               placeholder="Internship Title"
-               class="w-full p-3 border rounded-lg" required>
+        <button
+            class="flex items-center gap-3 w-full px-5 py-3
+                   text-sm font-medium text-red-600
+                   hover:bg-red-50 transition duration-200">
 
-        <input type="text" name="location"
-               placeholder="Location"
-               class="w-full p-3 border rounded-lg" required>
+            <!-- Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-5 w-5"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-14V3" />
+            </svg>
 
-        <input type="text" name="stipend"
-               placeholder="Stipend (₹5000 / Month)"
-               class="w-full p-3 border rounded-lg" required>
-
-        <input type="text" name="duration"
-               placeholder="Duration (3 Months)"
-               class="w-full p-3 border rounded-lg" required>
-
-        <textarea name="description" rows="4"
-                  placeholder="Internship Description"
-                  class="w-full p-3 border rounded-lg" required></textarea>
-
-        <input type="file" name="image"
-               class="w-full border rounded-lg">
-
-        <div class="flex gap-4">
-            <button type="submit"
-                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-                Create Post
-            </button>
-
-            <a href="{% url 'company_page' %}"
-               class="px-6 py-3 border rounded-lg">
-                Cancel
-            </a>
-        </div>
-
+            Logout
+        </button>
     </form>
-
 </div>
+
+            </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebar"
+       class="fixed top-20 left-0 w-72 h-[calc(100vh-5rem)] bg-white shadow-lg p-6
+              transform -translate-x-full lg:translate-x-0 transition-all z-40">
+
+    {% if company.logo %}
+    <a href="{% url 'company_page' %}">
+        <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border"></a>
+    {% else %}
+    <img src="https://via.placeholder.com/100" class="w-24 h-24 rounded-full mx-auto border">
+    {% endif %}
+
+    <h3 class="text-lg font-bold text-center mt-4">
+        {{ company.company_name }}
+    </h3>
+
+    <div class="mt-8 space-y-2">
+        <a href="{% url 'company_details' %}" class="menu-item">
+            <i class="ri-building-fill"></i> Company Details
+        </a>
+
+        <a href="{% url 'company_posts' %}" class="menu-item">
+            <i class="ri-briefcase-fill"></i> Internship Posts
+        </a>
+
+        <a href="{% url 'company_applications' %}" class="menu-item">
+            <i class="ri-file-list-3-fill"></i> Applications
+        </a>
+    </div>
+</aside>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="pt-28 px-6 lg:ml-72 transition-all">
+
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+
+        <h2 class="text-3xl font-bold text-blue-600 mb-6">
+            Create Internship Post
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+
+            <input type="text" name="internship_title"
+                   placeholder="Internship Title"
+                   class="w-full p-3 border rounded-lg" required>
+
+            <input type="text" name="location"
+                   placeholder="Location"
+                   class="w-full p-3 border rounded-lg" required>
+
+            <input type="text" name="stipend"
+                   placeholder="Stipend (₹5000 / Month)"
+                   class="w-full p-3 border rounded-lg" required>
+
+            <input type="text" name="duration"
+                   placeholder="Duration (3 Months)"
+                   class="w-full p-3 border rounded-lg" required>
+
+            <textarea name="description" rows="4"
+                      placeholder="Internship Description"
+                      class="w-full p-3 border rounded-lg" required></textarea>
+
+            <input type="file" name="image" class="w-full border rounded-lg" required>
+
+            <div class="flex gap-4">
+                <button type="submit"
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                    Create Post
+                </button>
+
+                <a href="{% url 'company_posts' %}"
+                   class="px-6 py-3 border rounded-lg">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- ================= STYLES ================= -->
+<style>
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+.menu-item:hover {
+    background: #e0f2fe;
+    color: #2563eb;
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("-translate-x-full");
+}
+
+function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("hidden");
+}
+</script>
 
 </body>
 </html>

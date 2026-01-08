@@ -11,42 +11,67 @@
 
 <!-- ================= TOP NAVBAR ================= -->
 <nav class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-    <div class="px-6 py-4 flex justify-between items-center">
+  <div class="px-6 py-4 flex items-center">
 
-        <button onclick="toggleSidebar()" class="lg:hidden text-2xl">
-            <i class="ri-menu-line"></i>
-        </button>
+    <!-- LEFT -->
+    <h1 class="text-2xl font-bold text-blue-600">
+      InternHUB
+    </h1>
 
-        <h1 class="text-2xl font-bold text-blue-600">InternHUB</h1>
+    <!-- RIGHT (Bell + Profile) -->
+    <div class="flex items-center gap-6 ml-auto">
 
-        <div class="flex items-center gap-6">
-            <a href="{% url 'company_notifications' %}">
-                <i class="ri-notification-3-fill text-2xl"></i>
-            </a>
+      <!-- Bell -->
+      <a href="{% url 'company_notifications' %}" class="relative">
+        <i class="ri-notification-3-fill text-2xl text-gray-700"></i>
 
-            <div class="relative">
-                {% if company.logo %}
+        {% if unread_notification_count > 0 %}
+        <span
+          class="absolute -top-1 -right-1 bg-red-600 text-white text-xs
+                 w-5 h-5 flex items-center justify-center rounded-full">
+          {{ unread_notification_count }}
+        </span>
+        {% endif %}
+      </a>
+
+      <!-- Profile -->
+      <div class="relative">
                 <img src="{{ company.logo.url }}"
                      onclick="toggleProfileMenu()"
                      class="w-10 h-10 rounded-full border cursor-pointer object-cover">
-                {% else %}
-                <img src="https://via.placeholder.com/40"
-                     onclick="toggleProfileMenu()"
-                     class="w-10 h-10 rounded-full border cursor-pointer">
-                {% endif %}
 
                 <div id="profileMenu"
-                     class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg z-50">
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
-                            Logout
-                        </button>
-                    </form>
-                </div>
+     class="hidden absolute right-0 mt-3 w-48 bg-white
+            border border-gray-200 rounded-xl shadow-xl z-50
+            overflow-hidden">
+
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+
+        <button
+            class="flex items-center gap-3 w-full px-5 py-3
+                   text-sm font-medium text-red-600
+                   hover:bg-red-50 transition duration-200">
+
+            <!-- Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="h-5 w-5"
+                 fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-14V3" />
+            </svg>
+
+            Logout
+        </button>
+    </form>
+</div>
+
             </div>
-        </div>
+
     </div>
+  </div>
 </nav>
 
 <!-- ================= SIDEBAR ================= -->
@@ -55,7 +80,9 @@
               transform -translate-x-full lg:translate-x-0 transition-all duration-300 z-40">
 
     {% if company.logo %}
-    <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border">
+    <a href="{% url 'company_page' %}">
+
+        <img src="{{ company.logo.url }}" class="w-24 h-24 rounded-full mx-auto object-cover border"></a>
     {% endif %}
 
     <h3 class="text-lg font-bold text-center mt-4">
@@ -150,34 +177,65 @@
     <!-- ACTIONS -->
     <div class="flex flex-col gap-2 w-full lg:w-44">
 
-        <span class="text-xs px-3 py-1 rounded-full text-center
-        {% if app.status == 'Pending' %} bg-yellow-100 text-yellow-700
-        {% elif app.status == 'Approved' %} bg-green-100 text-green-700
-        {% elif app.status == 'Rejected' %} bg-red-100 text-red-700
-        {% elif app.status == 'Shortlisted' %} bg-purple-100 text-purple-700
-        {% endif %}">
-            {{ app.status }}
-        </span>
+        {% if messages %}
+<div class="fixed top-5 right-5 z-50 space-y-3">
+    {% for message in messages %}
+        <div class="
+            px-4 py-3 rounded-lg shadow-lg text-white
+            {% if message.tags == 'success' %} bg-green-500
+            {% elif message.tags == 'error' %} bg-red-500
+            {% elif message.tags == 'warning' %} bg-yellow-500
+            {% else %} bg-blue-500 {% endif %}
+        ">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
 
-        <a href="{{ app.student.resume.url }}" target="_blank"
-           class="bg-blue-600 text-white text-sm py-2 rounded-lg text-center">
-            View Resume
-        </a>
+<div class="flex flex-col gap-2 w-full lg:w-44">
 
-        <a href="{% url 'update_application_status' app.id %}?status=Shortlisted"
-           class="bg-purple-600 text-white text-sm py-2 rounded-lg text-center">
-            ⭐ Shortlist
-        </a>
+{% if app.status == "Shortlisted" %}
+    <button class="bg-purple-600 text-white py-2 rounded-lg cursor-not-allowed" disabled>
+        ⭐ Shortlisted
+    </button>
 
-        <a href="{% url 'update_application_status' app.id %}?status=Approved"
-           class="bg-green-600 text-white text-sm py-2 rounded-lg text-center">
-            ✅ Approve
-        </a>
+{% elif app.status == "Approved" %}
+    <button class="bg-green-600 text-white py-2 rounded-lg cursor-not-allowed" disabled>
+        ✅ Approved
+    </button>
 
-        <a href="{% url 'update_application_status' app.id %}?status=Rejected"
-           class="bg-red-600 text-white text-sm py-2 rounded-lg text-center">
-            ❌ Reject
-        </a>
+{% elif app.status == "Rejected" %}
+    <button class="bg-red-600 text-white py-2 rounded-lg cursor-not-allowed" disabled>
+        ❌ Rejected
+    </button>
+
+{% else %}
+    <!-- Pending (ALL buttons enabled) -->
+    <button onclick="openConfirmModal('{% url 'update_application_status' app.id %}?status=Shortlisted','Shortlisted')"
+            class="bg-purple-600 text-white py-2 rounded-lg">
+        ⭐ Shortlist
+    </button>
+
+    <button onclick="openConfirmModal('{% url 'update_application_status' app.id %}?status=Approved','Approved')"
+            class="bg-green-600 text-white py-2 rounded-lg">
+        ✅ Approve
+    </button>
+
+    <button onclick="openConfirmModal('{% url 'update_application_status' app.id %}?status=Rejected','Rejected')"
+            class="bg-red-600 text-white py-2 rounded-lg">
+        ❌ Reject
+    </button>
+
+    <button onclick="openConfirmModal('{% url 'update_application_status' app.id %}?status=Pending','Pending')"
+            class="bg-yellow-500 text-white py-2 rounded-lg">
+        ⏳ Pending
+    </button>
+{% endif %}
+
+</div>
+
+
     </div>
 
 </div>
@@ -185,6 +243,35 @@
 </div>
 
 </main>
+<div id="confirmModal"
+ class="fixed inset-0 hidden bg-black bg-opacity-40
+        flex items-center justify-center z-50">
+
+ <div class="bg-white rounded-2xl shadow-xl w-96 p-6 text-center">
+
+  <div id="modalIcon"
+   class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl">
+  </div>
+
+  <h2 class="text-xl font-semibold mb-2">Confirm Action</h2>
+
+  <p id="modalText" class="text-gray-600 mb-6"></p>
+
+  <div class="flex justify-center gap-4">
+   <button onclick="closeConfirmModal()"
+    class="px-5 py-2 rounded-lg border border-gray-300">
+    Cancel
+   </button>
+
+   <a id="confirmBtn"
+    class="px-5 py-2 rounded-lg text-white bg-blue-600">
+    Yes, Confirm
+   </a>
+  </div>
+
+ </div>
+</div>
+
 
 <!-- ================= SCRIPT ================= -->
 <script>
@@ -214,6 +301,40 @@ function filterApps() {
 }
 searchInput.addEventListener("input", filterApps);
 statusFilter.addEventListener("change", filterApps);
+    function openConfirmModal(url, status) {
+ const modal = document.getElementById("confirmModal");
+ const text = document.getElementById("modalText");
+ const icon = document.getElementById("modalIcon");
+ const btn = document.getElementById("confirmBtn");
+
+ modal.classList.remove("hidden");
+ btn.href = url;
+
+ if (status === "Approved") {
+  icon.innerHTML = "✅";
+  icon.className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-green-100 text-green-600";
+  text.innerHTML = "Approve this application?";
+ }
+ else if (status === "Rejected") {
+  icon.innerHTML = "❌";
+  icon.className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-red-100 text-red-600";
+  text.innerHTML = "Reject this application?";
+ }
+ else if (status === "Shortlisted") {
+  icon.innerHTML = "⭐";
+  icon.className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-purple-100 text-purple-600";
+  text.innerHTML = "Shortlist this application?";
+ }
+ else if (status === "Pending") {
+  icon.innerHTML = "⏳";
+  icon.className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-yellow-100 text-yellow-600";
+  text.innerHTML = "Move application back to pending?";
+ }
+}
+
+function closeConfirmModal() {
+ document.getElementById("confirmModal").classList.add("hidden");
+}
 </script>
 
 <style>
